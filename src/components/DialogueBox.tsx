@@ -48,7 +48,7 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
         setIsTyping(false);
         clearInterval(timer);
       }
-    }, 18);
+    }, 10);
 
     return () => clearInterval(timer);
   }, [dialogue]);
@@ -60,7 +60,7 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
 
     const autoTimer = setTimeout(() => {
       onNext();
-    }, 1900);
+    }, 1200);
 
     return () => clearTimeout(autoTimer);
   }, [isAutoPlay, isTyping, isLastDialogue, hasChoices, onNext]);

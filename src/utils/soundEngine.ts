@@ -73,6 +73,7 @@ class SoundEngine {
       const audio = new Audio(audioUrl);
       this.currentVoiceAudio = audio;
       audio.volume = 1.0;
+      audio.playbackRate = 1.18; // Tăng tốc độ đọc nhanh hơn và dứt khoát hơn
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
