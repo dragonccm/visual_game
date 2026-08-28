@@ -20,20 +20,20 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="w-full max-w-2xl wood-panel rounded-2xl p-5 md:p-6 shadow-2xl border-2 border-[#7a5832]">
+    <div className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in select-none">
+      <div className="w-full max-w-2xl wood-panel-solid rounded-2xl p-5 md:p-6 shadow-2xl">
         {/* Header */}
-        <div className="text-center mb-5 border-b border-[#3b2718] pb-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#21140c] border border-[#5a3e26] text-[#c49a62] text-xs font-bold uppercase tracking-widest mb-1.5">
-            <ShieldAlert className="w-4 h-4 text-[#c49a62]" />
+        <div className="text-center mb-5 border-b-2 border-[#3b2718] pb-3">
+          <div className="btn-material-bronze inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider mb-2">
+            <ShieldAlert className="w-4 h-4 text-[#faebd7]" />
             Thời Khắc Quyết Sách Chiến Cục
           </div>
-          <h3 className="text-lg md:text-2xl font-black metallic-gold-text font-serif-epic">
-            Chọn Hướng Xuất Kích
+          <h3 className="text-lg md:text-2xl font-black metallic-gold-title">
+            CHỌN HƯỚNG XUẤT KÍCH
           </h3>
         </div>
 
-        {/* Choice Buttons */}
+        {/* Choice Buttons - Solid Material Cards */}
         <div className="flex flex-col gap-3">
           {choices.map((choice, index) => {
             const isHighlight = studyMode && choice.isOptimal;
@@ -42,18 +42,18 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
               <button
                 key={choice.id}
                 onClick={() => handleSelect(choice)}
-                className={`group relative flex flex-col p-3.5 md:p-4 rounded-xl border transition-all duration-200 text-left cursor-pointer shadow-lg active:scale-98 ${
+                className={`group relative flex flex-col p-4 rounded-xl transition-all duration-200 text-left cursor-pointer shadow-xl active:scale-98 ${
                   isHighlight
-                    ? 'border-[#c8963e] bg-gradient-to-r from-[#2e1d11] via-[#3d2717] to-[#2e1d11] shadow-black/80 ring-1 ring-[#c8963e]/60'
-                    : 'border-[#382618] bg-[#140e0a] hover:bg-[#21160f] hover:border-[#694c30]'
+                    ? 'btn-material-bronze ring-2 ring-[#d4af37]'
+                    : 'card-solid-dark hover:border-[#8e7343] hover:bg-[#1a110a]'
                 }`}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3.5">
                   <div
-                    className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border ${
+                    className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-black shrink-0 mt-0.5 border-2 ${
                       isHighlight
-                        ? 'bg-[#8e6c38] text-[#140d07] border-[#d4af37] font-black'
-                        : 'bg-[#1f1610] text-[#9c8978] border-[#382618] group-hover:bg-[#4a3422] group-hover:text-[#f0e4d6]'
+                        ? 'bg-[#faebd7] text-[#24170e] border-[#d4af37]'
+                        : 'btn-material-iron text-[#e5edf7]'
                     }`}
                   >
                     {index + 1}
@@ -61,15 +61,15 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h4 className="text-sm md:text-base font-bold text-[#ede3d8] group-hover:text-[#f5ebd9] font-serif-epic">
+                      <h4 className="text-sm md:text-base font-black text-[#faebd7]">
                         {choice.text}
                       </h4>
                       {choice.tag && (
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                          className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
                             choice.isOptimal
-                              ? 'bg-[#8e6c38] text-[#140d07] border border-[#d4af37]'
-                              : 'bg-[#1a120c] text-[#8c7867] border border-[#382618]'
+                              ? 'bg-[#faebd7] text-[#140d07] border border-[#d4af37]'
+                              : 'btn-material-wood text-[#d4af37]'
                           }`}
                         >
                           {choice.tag}
@@ -78,23 +78,23 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
                     </div>
 
                     {choice.description && (
-                      <p className="text-xs text-[#b8a798] leading-snug">
+                      <p className="text-xs text-[#c4b3a3] font-medium leading-snug">
                         {choice.description}
                       </p>
                     )}
 
                     {/* Historical reason for learners */}
                     {studyMode && choice.historicalReason && (
-                      <div className="mt-2 text-[11px] text-[#d4af37] bg-[#1a110b] p-2 rounded-md border border-[#4a3421] flex items-start gap-1.5 leading-relaxed">
-                        <BookOpen className="w-3.5 h-3.5 text-[#c8963e] shrink-0 mt-0.5" />
+                      <div className="mt-2 text-[11px] text-[#faebd7] bg-[#120b07] p-2.5 rounded-lg border-2 border-[#5a3d28] flex items-start gap-2 leading-relaxed font-semibold">
+                        <BookOpen className="w-4 h-4 text-[#d4af37] shrink-0 mt-0.5" />
                         <span>
-                          <strong>Lý do quân sự:</strong> {choice.historicalReason}
+                          <strong className="text-[#d4af37]">Lý do quân sự:</strong> {choice.historicalReason}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <Swords className="w-5 h-5 text-[#8e6c38] group-hover:text-[#d4af37] transition shrink-0 opacity-0 group-hover:opacity-100" />
+                  <Swords className="w-5 h-5 text-[#d4af37] shrink-0 opacity-0 group-hover:opacity-100 transition" />
                 </div>
               </button>
             );
@@ -103,8 +103,8 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
 
         {/* Study Mode Indicator Note */}
         {studyMode && (
-          <div className="mt-3.5 text-center text-xs text-[#a68652] font-medium flex items-center justify-center gap-1.5">
-            <span>⚔️ Chế độ Học Tập: Huy hiệu đồng sáng biểu trưng cho quyết sách chuẩn xác của Ngô Quyền!</span>
+          <div className="mt-4 text-center text-xs text-[#d4af37] font-bold flex items-center justify-center gap-1.5">
+            <span>⚔️ Chế độ Học Tập: Thẻ đồng vàng biểu trưng cho kế sách chuẩn xác của Ngô Quyền!</span>
           </div>
         )}
       </div>

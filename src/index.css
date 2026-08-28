@@ -8,50 +8,51 @@
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Be Vietnam Pro', 'Plus Jakarta Sans', sans-serif;
-    background-color: #0d0a08;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background-color: #0b0806;
     color: #ede4dc;
     user-select: none;
     -webkit-user-select: none;
   }
 
   h1, h2, h3, .font-serif-epic {
-    font-family: 'Cinzel', 'Playfair Display', 'Be Vietnam Pro', serif;
-    letter-spacing: 0.04em;
+    font-family: 'Be Vietnam Pro', 'Playfair Display', sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.02em;
   }
 }
 
 /* =========================================================================
-   VẬT LIỆU KIM LOẠI ĐÚC & GỖ LIM CỔ KÍNH (KHÔNG DÙNG TRONG SUỐT / OUTLINE)
+   VẬT LIỆU KIM LOẠI ĐÚC & GỖ LIM NGUYÊN KHỐI (100% SOLID - KHÔNG TRONG SUỐT)
    ========================================================================= */
 
-/* 1. NÚT KIM LOẠI ĐỒNG THAU ĐÚC (SOLID BRONZE MEDAL) */
+/* 1. NÚT & THẺ ĐỒNG THAU ĐÚC KHỐI (SOLID FORGED BRONZE) */
 .btn-material-bronze {
-  background: linear-gradient(180deg, #6c4b28 0%, #4a3219 50%, #2e1d0d 100%) !important;
-  border: 1.5px solid #a8793b !important;
-  border-top: 1.5px solid #d8a65c !important;
-  border-bottom: 2px solid #140b03 !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.6) !important;
+  background: linear-gradient(180deg, #6c4a26 0%, #4a3219 50%, #2e1d0d 100%) !important;
+  border: 2px solid #a8793b !important;
+  border-top: 2px solid #e0b06b !important;
+  border-bottom: 2.5px solid #140b03 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.6) !important;
   color: #faebd7 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95) !important;
   font-weight: 700 !important;
 }
 .btn-material-bronze:hover {
   background: linear-gradient(180deg, #7d5730 0%, #593c20 50%, #3a2512 100%) !important;
-  border-color: #c9934d !important;
+  border-color: #d4af37 !important;
   color: #ffffff !important;
 }
 .btn-material-bronze:active {
-  transform: translateY(1px) !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(1.5px) !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* 2. NÚT SẮT THÉP RÈN NÒNG SÚNG (SOLID FORGED STEEL) */
+/* 2. NÚT & THẺ SẮT THÉP RÈN NÒNG SÚNG (SOLID FORGED STEEL) */
 .btn-material-iron {
   background: linear-gradient(180deg, #374151 0%, #232a35 50%, #151a22 100%) !important;
   border: 1.5px solid #526074 !important;
-  border-top: 1.5px solid #7b8ea7 !important;
-  border-bottom: 2px solid #080a0e !important;
+  border-top: 2px solid #7b8ea7 !important;
+  border-bottom: 2.5px solid #080a0e !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.6) !important;
   color: #e5edf7 !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
@@ -59,43 +60,70 @@
 }
 .btn-material-iron:hover {
   background: linear-gradient(180deg, #445063 0%, #2d3644 50%, #1d232e 100%) !important;
-  border-color: #6d809c !important;
+  border-color: #8fa5c4 !important;
   color: #ffffff !important;
 }
 .btn-material-iron:active {
-  transform: translateY(1px) !important;
+  transform: translateY(1.5px) !important;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* 3. NÚT GỖ LIM NGUYÊN KHỐI (SOLID CARVED WOOD) */
+/* 3. NÚT & THẺ GỖ LIM NGUYÊN KHỐI (SOLID CARVED WOOD) */
 .btn-material-wood {
-  background: linear-gradient(180deg, #3d2315 0%, #26150b 50%, #150b05 100%) !important;
-  border: 1.5px solid #6b4728 !important;
-  border-top: 1.5px solid #946138 !important;
-  border-bottom: 2px solid #080402 !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  background: linear-gradient(180deg, #3d2315 0%, #28160c 50%, #160c06 100%) !important;
+  border: 2px solid #6b4728 !important;
+  border-top: 2px solid #9c673d !important;
+  border-bottom: 2.5px solid #080402 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
   color: #ede4dc !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
   font-weight: 600 !important;
 }
 .btn-material-wood:hover {
   background: linear-gradient(180deg, #4c2d1b 0%, #341d10 50%, #1f1007 100%) !important;
-  border-color: #8c5d35 !important;
+  border-color: #8e7343 !important;
   color: #ffffff !important;
 }
 
-/* BẢNG GỖ LIM CỔ KÍNH DÀY NGUYÊN KHỐI */
-.wood-panel {
-  background: linear-gradient(180deg, #261912 0%, #1b110b 60%, #110b07 100%);
-  border: 2px solid #5a3d28;
-  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.15), 0 12px 36px rgba(0, 0, 0, 0.95);
+/* BẢNG GỖ LIM NGUYÊN KHỐI ĐẶC CÓ VIỀN ĐỒNG DÀY */
+.wood-panel-solid {
+  background: #1c120b !important;
+  background-image: linear-gradient(180deg, #24170e 0%, #1a100a 60%, #120a06 100%) !important;
+  border: 2.5px solid #735032 !important;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.6), 0 16px 40px rgba(0, 0, 0, 0.95) !important;
 }
 
-/* CHỮ ÁNH KIM ĐỒNG CỔ */
-.metallic-gold-text {
-  background: linear-gradient(180deg, #f7e8b6 0%, #d4af37 50%, #9e751b 100%);
+/* THẺ BÀI KIM LOẠI / GỖ ĐẶC */
+.card-solid-dark {
+  background: #140d08 !important;
+  border: 2px solid #3d2919 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 6px 16px rgba(0, 0, 0, 0.8) !important;
+}
+
+.card-solid-selected {
+  background: linear-gradient(180deg, #3d2717 0%, #2b1a0e 100%) !important;
+  border: 2.5px solid #d4af37 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 20px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Ô NHẬP LIỆU GỖ KHẮC CHÌM */
+.input-solid-carved {
+  background: #120c08 !important;
+  border: 2px solid #5a3d28 !important;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  color: #f5ebe1 !important;
+}
+.input-solid-carved:focus {
+  border-color: #d4af37 !important;
+  outline: none !important;
+}
+
+/* CHỮ ÁNH KIM ĐỒNG CỔ NGUYÊN BẢN (KHÔNG LỖI FONT) */
+.metallic-gold-title {
+  background: linear-gradient(180deg, #fff2cc 0%, #e6be44 40%, #b8860b 80%, #7d5807 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
 }
 
 /* Scrollbar */
