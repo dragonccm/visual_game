@@ -24,15 +24,15 @@ export const CharacterSpriteDisplay: React.FC<CharacterSpriteDisplayProps> = ({
         isLeft
           ? 'left-4 md:left-16 animate-slide-in-left'
           : 'right-4 md:right-16 animate-slide-in-right'
-      } ${emotion === 'angry' || emotion === 'intense' ? 'scale-105 filter drop-shadow-[0_0_25px_rgba(225,29,72,0.6)]' : 'drop-shadow-[0_0_20px_rgba(0,0,0,0.8)]'}`}
+      } ${emotion === 'angry' || emotion === 'intense' ? 'scale-105 filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.95)]' : 'drop-shadow-[0_8px_25px_rgba(0,0,0,0.85)]'}`}
     >
-      <div className="relative w-48 h-64 sm:w-60 sm:h-80 md:w-72 md:h-96 rounded-2xl overflow-hidden border-2 border-amber-600/40 shadow-2xl bg-stone-950/40 backdrop-blur-sm">
+      <div className="relative w-48 h-64 sm:w-60 sm:h-80 md:w-72 md:h-96 rounded-2xl overflow-hidden border-2 border-[#7a5832] shadow-2xl bg-[#120c08]/60 backdrop-blur-sm">
         <img
           src={character.fullImage}
           alt={character.name}
           className="w-full h-full object-cover object-top"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0805] via-transparent to-transparent opacity-85" />
       </div>
     </div>
   );

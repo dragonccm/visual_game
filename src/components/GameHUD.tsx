@@ -48,38 +48,38 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   const getTideBadge = () => {
     switch (scene.tideState) {
       case 'high':
-        return { text: 'Triều Cường (Nước Ngập Bãi Cọc)', color: 'bg-cyan-950 text-cyan-300 border-cyan-700/60' };
+        return { text: 'Triều Cường (Nước Ngập Bãi Cọc)', color: 'bg-[#16212b] text-[#8cb0cf] border-[#2d3e4f]' };
       case 'falling':
-        return { text: 'Triều Rút Gấp (Cọc Nhô Lên)', color: 'bg-amber-950 text-amber-300 border-amber-600/70 animate-pulse' };
+        return { text: 'Triều Rút Gấp (Cọc Nhô Lên)', color: 'bg-[#2b1b11] text-[#d4af37] border-[#7d5830]' };
       case 'low':
-        return { text: 'Triều Kiệt (Lộ Đáy Sông)', color: 'bg-emerald-950 text-emerald-300 border-emerald-700/60' };
+        return { text: 'Triều Kiệt (Lộ Đáy Sông)', color: 'bg-[#15241b] text-[#86b595] border-[#294232]' };
       default:
-        return { text: 'Nước Đứng (Thủy Triều Bình Hoà)', color: 'bg-stone-900 text-stone-300 border-stone-700' };
+        return { text: 'Nước Đứng (Thủy Triều Bình Hoà)', color: 'bg-[#171412] text-[#b09e8f] border-[#382b22]' };
     }
   };
 
   const tide = getTideBadge();
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-30 px-3 md:px-6 py-2 flex items-center justify-between border-b border-amber-900/40 bg-stone-950/80 backdrop-blur-md select-none">
+    <header className="absolute top-0 left-0 right-0 z-30 px-3 md:px-6 py-2 flex items-center justify-between border-b border-[#3b2718] bg-[#120d09]/85 backdrop-blur-md select-none">
       {/* Left: Chapter info, Branch Tag & Player Name */}
       <div className="flex items-center gap-2.5">
         <div className="hidden sm:flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-bold text-amber-500/90 tracking-widest">
-              {scene.chapter} • <span className="text-amber-200">{playerName}</span>
+            <span className="text-[10px] uppercase font-bold text-[#b89558] tracking-widest">
+              {scene.chapter} • <span className="text-[#e0d3c5]">{playerName}</span>
             </span>
             {scene.branchTag && (
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-950 border border-amber-700/60 text-amber-300">
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#26180f] border border-[#523722] text-[#c49a62]">
                 {scene.branchTag}
               </span>
             )}
           </div>
-          <h2 className="text-xs md:text-sm font-bold text-stone-100 font-serif-epic truncate max-w-xs">
+          <h2 className="text-xs md:text-sm font-bold text-[#f2e7dc] font-serif-epic truncate max-w-xs">
             {scene.title}
           </h2>
         </div>
-        <div className="sm:hidden text-xs font-bold text-amber-200">
+        <div className="sm:hidden text-xs font-bold text-[#d4af37]">
           {scene.title}
         </div>
       </div>
@@ -88,7 +88,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
       <div className="flex items-center gap-2 md:gap-3">
         {/* Tide Badge */}
         <div
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${tide.color} shadow-sm`}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${tide.color} shadow-sm`}
         >
           <Waves className="w-3.5 h-3.5 shrink-0" />
           <span className="hidden md:inline">{tide.text}</span>
@@ -97,29 +97,27 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           </span>
         </div>
 
-        {/* Morale Bar */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-stone-900/90 rounded-full border border-stone-700">
-          <Award className="w-3.5 h-3.5 text-rose-400" />
-          <span className="text-xs text-stone-300 font-medium">Khí Thế:</span>
-          <div className="w-16 bg-stone-800 rounded-full h-2 overflow-hidden border border-stone-700">
+        {/* Morale Bar - Antique Bronze & Iron Style */}
+        <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-[#1c140e] rounded-md border border-[#3b291c]">
+          <Award className="w-3.5 h-3.5 text-[#b8934a]" />
+          <span className="text-xs text-[#a69483] font-medium">Khí Thế:</span>
+          <div className="w-16 bg-[#0f0a07] rounded-sm h-2 overflow-hidden border border-[#2e1f14]">
             <div
-              className={`h-full transition-all duration-500 rounded-full ${
-                morale > 70 ? 'bg-gradient-to-r from-emerald-500 to-amber-400' : morale > 40 ? 'bg-amber-500' : 'bg-rose-600'
-              }`}
+              className="h-full transition-all duration-500 bg-gradient-to-r from-[#6b4e2b] via-[#a37a3e] to-[#d4af37]"
               style={{ width: `${Math.min(100, Math.max(10, morale))}%` }}
             />
           </div>
-          <span className="text-xs font-bold text-amber-300">{morale}</span>
+          <span className="text-xs font-bold text-[#d4af37]">{morale}</span>
         </div>
 
         {/* Study Mode (Gợi ý Chính Sử) Toggle Button */}
         <button
           onClick={onToggleStudyMode}
           title={studyMode ? 'Tắt Gợi Ý Học Tập' : 'Bật Gợi Ý Chính Sử Cho Học Viên'}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold transition cursor-pointer shadow-sm ${
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold transition cursor-pointer shadow-sm ${
             studyMode
-              ? 'border-amber-400 bg-amber-500 text-stone-950 glow-gold'
-              : 'border-stone-700 bg-stone-900/90 text-stone-400 hover:text-stone-200'
+              ? 'border-[#c8963e] bg-[#3d2716] text-[#f7e9c8]'
+              : 'border-[#382618] bg-[#140e0a] text-[#8c7867] hover:text-[#d4b483]'
           }`}
         >
           <GraduationCap className="w-3.5 h-3.5" />
@@ -132,24 +130,24 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         <button
           onClick={onOpenFlowchart}
           title="Xem Cây Nhánh Kịch Bản"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-amber-500/70 bg-gradient-to-r from-amber-950/70 to-rose-950/70 hover:brightness-110 text-amber-200 text-xs font-bold cursor-pointer transition shadow-md"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#7d5830] bg-[#24170e] hover:border-[#b8934a] text-[#d4af37] text-xs font-bold cursor-pointer transition shadow-md"
         >
-          <GitBranch className="w-4 h-4 text-amber-400" />
+          <GitBranch className="w-4 h-4" />
           <span className="hidden sm:inline">Cây Nhánh</span>
         </button>
 
         <button
           onClick={onOpenCodex}
           title="Mở Sử Ký Tra Cứu"
-          className="p-1.5 rounded-lg border border-amber-700/60 bg-amber-950/50 hover:bg-amber-900/60 text-amber-200 text-xs font-medium cursor-pointer transition"
+          className="p-1.5 rounded-md border border-[#3d2919] bg-[#1a110a] hover:bg-[#2e1d10] text-[#c4b3a3] hover:text-[#d4af37] text-xs font-medium cursor-pointer transition"
         >
-          <BookOpen className="w-4 h-4 text-amber-400" />
+          <BookOpen className="w-4 h-4" />
         </button>
 
         <button
           onClick={onOpenHistory}
           title="Xem Lịch Sử Thoại"
-          className="p-1.5 rounded-lg border border-stone-700 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-amber-200 cursor-pointer transition"
+          className="p-1.5 rounded-md border border-[#382618] bg-[#150e09] hover:bg-[#24170e] text-[#8c7867] hover:text-[#f0e4d6] cursor-pointer transition"
         >
           <History className="w-4 h-4" />
         </button>
@@ -158,10 +156,10 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         <button
           onClick={onToggleVoice}
           title={isVoiceEnabled ? 'Tắt Lồng Tiếng AI' : 'Bật Lồng Tiếng AI'}
-          className={`p-1.5 rounded-lg border cursor-pointer transition ${
+          className={`p-1.5 rounded-md border cursor-pointer transition ${
             isVoiceEnabled
-              ? 'border-emerald-600/70 bg-emerald-950/60 text-emerald-300'
-              : 'border-stone-700 bg-stone-900 text-stone-500'
+              ? 'border-[#5a4225] bg-[#291b10] text-[#d4af37]'
+              : 'border-[#2e2015] bg-[#120c08] text-[#5e4d3f]'
           }`}
         >
           {isVoiceEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
@@ -171,15 +169,15 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         <button
           onClick={onToggleMute}
           title={isMuted ? 'Bật Toàn Bộ Âm Thanh' : 'Tắt Âm Thanh'}
-          className="p-1.5 rounded-lg border border-stone-700 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-amber-200 cursor-pointer transition"
+          className="p-1.5 rounded-md border border-[#382618] bg-[#150e09] hover:bg-[#24170e] text-[#8c7867] hover:text-[#f0e4d6] cursor-pointer transition"
         >
-          {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+          {isMuted ? <VolumeX className="w-4 h-4 text-[#8a4e40]" /> : <Volume2 className="w-4 h-4 text-[#6e9b7b]" />}
         </button>
 
         <button
           onClick={onRestart}
           title="Chơi Lại Từ Đầu"
-          className="p-1.5 rounded-lg border border-stone-700 bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-rose-300 cursor-pointer transition"
+          className="p-1.5 rounded-md border border-[#382618] bg-[#150e09] hover:bg-[#24170e] text-[#8c7867] hover:text-[#a85848] cursor-pointer transition"
         >
           <RotateCcw className="w-4 h-4" />
         </button>
