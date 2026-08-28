@@ -1,39 +1,19 @@
 import { CharacterId } from '../types/game';
 
-// Standard Vietnamese Voice Synthesizer & Web Audio Manager
+// 100% Studio Vietnamese Voice & Web Audio Manager
 class SoundEngine {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
   private isVoiceEnabled: boolean = true;
   private currentAudioElement: HTMLAudioElement | null = null;
-  private cachedViVoices: SpeechSynthesisVoice[] = [];
   private bgmOscillators: OscillatorNode[] = [];
   private bgmGain: GainNode | null = null;
   private currentBgmType: string | null = null;
 
-  constructor() {
-    this.initVoices();
-  }
-
-  private initVoices() {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      const load = () => {
-        const voices = window.speechSynthesis.getVoices();
-        this.cachedViVoices = voices.filter(
-          (v) =>
-            v.lang.toLowerCase().startsWith('vi') ||
-            v.lang.toLowerCase().includes('viet') ||
-            v.name.toLowerCase().includes('vietnam') ||
-            v.name.toLowerCase().includes('tiếng việt') ||
-            v.name.toLowerCase().includes('hoaimy') ||
-            v.name.toLowerCase().includes('namminh')
-        );
-      };
-
-      load();
-      if (window.speechSynthesis.onvoiceschanged !== undefined) {
-        window.speechSynthesis.onvoiceschanged = load;
-      }
+  public unlockAudio() {
+    this.initContext();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
     }
   }
 
@@ -72,102 +52,37 @@ class SoundEngine {
     return this.isVoiceEnabled;
   }
 
-  // --- STANDARD VIETNAMESE VOICE ENGINE (LỒNG TIẾNG THỰC TẾ 100%) ---
-  public speakDialogue(dialogueId: string, text: string, speaker: CharacterId) {
+  // --- STUDIO VIETNAMESE VOICE AUDIO (100% FILE MP3 THỰC TẾ, LOẠI BỎ HOÀN TOÀN GIỌNG ROBOT) ---
+  public speakDialogue(dialogueId: string, _text?: string, _speaker?: CharacterId) {
     if (this.isMuted || !this.isVoiceEnabled) return;
     this.stopSpeech();
-
-    // Strategy 1: Play pre-generated studio HD Vietnamese audio file from local assets
-    const localAudioUrl = `/assets/audio/voices/${dialogueId}.mp3`;
-    const audio = new Audio(localAudioUrl);
-    this.currentAudioElement = audio;
-
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Strategy 2: Fallback to online neural audio stream or browser speech synthesis
-        this.speakText(text, speaker);
-      });
-    }
-  }
-
-  public speakText(text: string, speaker: CharacterId) {
-    if (this.isMuted || !this.isVoiceEnabled) return;
-    this.stopSpeech();
-
-    const cleanText = text.replace(/[*_#—–•⚡👑🔥⚔️🏆!]/g, '').trim();
-    if (!cleanText) return;
-
-    // Strategy 2: Online Standard Vietnamese High-Definition Audio (Google Neural TTS)
-    const onlineTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(
-      cleanText
-    )}`;
-
-    const audio = new Audio(onlineTtsUrl);
-    this.currentAudioElement = audio;
-
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Strategy 3: Fallback to Native Browser SpeechSynthesis
-        this.speakWithSpeechSynthesis(cleanText, speaker);
-      });
-    }
-  }
-
-  // Fallback Native SpeechSynthesis with optimized Vietnamese voice matching
-  private speakWithSpeechSynthesis(cleanText: string, speaker: CharacterId) {
-    if (!('speechSynthesis' in window)) return;
 
     try {
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'vi-VN';
+      const localAudioUrl = `/assets/audio/voices/${dialogueId}.mp3`;
+      const audio = new Audio(localAudioUrl);
+      this.currentAudioElement = audio;
+      audio.volume = 1.0;
 
-      if (this.cachedViVoices.length === 0) {
-        this.initVoices();
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn(`[Audio] Failed to auto-play voice for ${dialogueId}:`, err);
+        });
       }
-
-      const bestVoice =
-        this.cachedViVoices.find(
-          (v) =>
-            v.name.includes('Natural') ||
-            v.name.includes('HoaiMy') ||
-            v.name.includes('NamMinh') ||
-            v.name.includes('Google')
-        ) || this.cachedViVoices[0];
-
-      if (bestVoice) {
-        utterance.voice = bestVoice;
-      }
-
-      if (speaker === 'ngo_quyen') {
-        utterance.pitch = 0.8;
-        utterance.rate = 0.95;
-      } else if (speaker === 'hoang_thao') {
-        utterance.pitch = 1.25;
-        utterance.rate = 1.1;
-      } else if (speaker === 'nguyen_tat_to') {
-        utterance.pitch = 0.95;
-        utterance.rate = 1.1;
-      } else {
-        utterance.pitch = 1.0;
-        utterance.rate = 1.0;
-      }
-
-      window.speechSynthesis.speak(utterance);
-    } catch {
-      // Speech error ignore
+    } catch (err) {
+      console.error(`[Audio] Error initializing audio for ${dialogueId}:`, err);
     }
   }
 
   public stopSpeech() {
     if (this.currentAudioElement) {
-      this.currentAudioElement.pause();
-      this.currentAudioElement.currentTime = 0;
+      try {
+        this.currentAudioElement.pause();
+        this.currentAudioElement.currentTime = 0;
+      } catch {
+        // Ignore
+      }
       this.currentAudioElement = null;
-    }
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
     }
   }
 

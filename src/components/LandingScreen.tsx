@@ -20,6 +20,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
   const [previewChar, setPreviewChar] = useState<CharacterId>('ngo_quyen');
 
   const handleStart = () => {
+    soundEngine.unlockAudio();
     soundEngine.playSFX('horn');
     soundEngine.playSFX('drum');
     onStartGame(playerName.trim() || 'Dũng Sĩ Đại Việt', selectedHero);
