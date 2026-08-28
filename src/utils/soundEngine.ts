@@ -72,15 +72,33 @@ class SoundEngine {
     return this.isVoiceEnabled;
   }
 
-  // --- STANDARD VIETNAMESE VOICE ENGINE (GIỌNG ĐỌC CHUẨN TIẾNG VIỆT) ---
+  // --- STANDARD VIETNAMESE VOICE ENGINE (LỒNG TIẾNG THỰC TẾ 100%) ---
+  public speakDialogue(dialogueId: string, text: string, speaker: CharacterId) {
+    if (this.isMuted || !this.isVoiceEnabled) return;
+    this.stopSpeech();
+
+    // Strategy 1: Play pre-generated studio HD Vietnamese audio file from local assets
+    const localAudioUrl = `/assets/audio/voices/${dialogueId}.mp3`;
+    const audio = new Audio(localAudioUrl);
+    this.currentAudioElement = audio;
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Strategy 2: Fallback to online neural audio stream or browser speech synthesis
+        this.speakText(text, speaker);
+      });
+    }
+  }
+
   public speakText(text: string, speaker: CharacterId) {
     if (this.isMuted || !this.isVoiceEnabled) return;
     this.stopSpeech();
 
-    const cleanText = text.replace(/[*_#—–•⚡👑🔥⚔️🏆]/g, '').trim();
+    const cleanText = text.replace(/[*_#—–•⚡👑🔥⚔️🏆!]/g, '').trim();
     if (!cleanText) return;
 
-    // Strategy 1: Online Standard Vietnamese High-Definition Audio (Google Neural TTS)
+    // Strategy 2: Online Standard Vietnamese High-Definition Audio (Google Neural TTS)
     const onlineTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(
       cleanText
     )}`;
@@ -88,21 +106,10 @@ class SoundEngine {
     const audio = new Audio(onlineTtsUrl);
     this.currentAudioElement = audio;
 
-    // Tune playback rate per character
-    if (speaker === 'ngo_quyen') {
-      audio.playbackRate = 0.95; // Uy nghiêm, dõng dạc
-    } else if (speaker === 'hoang_thao') {
-      audio.playbackRate = 1.1; // Nhanh, ngạo mạn
-    } else if (speaker === 'nguyen_tat_to') {
-      audio.playbackRate = 1.05; // Dứt khoát
-    } else {
-      audio.playbackRate = 1.0;
-    }
-
     const playPromise = audio.play();
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // If online audio fails (e.g. offline or cross-origin block), fallback to Native Browser SpeechSynthesis
+        // Strategy 3: Fallback to Native Browser SpeechSynthesis
         this.speakWithSpeechSynthesis(cleanText, speaker);
       });
     }
@@ -116,12 +123,10 @@ class SoundEngine {
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = 'vi-VN';
 
-      // Pick best Vietnamese voice
       if (this.cachedViVoices.length === 0) {
         this.initVoices();
       }
 
-      // Prioritize natural Vietnamese voices (HoaiMy, NamMinh, Google Tiếng Việt)
       const bestVoice =
         this.cachedViVoices.find(
           (v) =>
@@ -135,7 +140,6 @@ class SoundEngine {
         utterance.voice = bestVoice;
       }
 
-      // Character-specific Voice Tuning
       if (speaker === 'ngo_quyen') {
         utterance.pitch = 0.8;
         utterance.rate = 0.95;

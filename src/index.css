@@ -9,8 +9,8 @@
     margin: 0;
     padding: 0;
     font-family: 'Be Vietnam Pro', 'Plus Jakarta Sans', sans-serif;
-    background-color: #0d0a08; /* Gỗ mun sẫm */
-    color: #ede4dc; /* Màu giấy dó / ngà cổ */
+    background-color: #0d0a08;
+    color: #ede4dc;
     user-select: none;
     -webkit-user-select: none;
   }
@@ -21,48 +21,84 @@
   }
 }
 
-/* SẮT THÉP KIM LOẠI & GỖ CỔ KÍNH THEME */
+/* =========================================================================
+   VẬT LIỆU KIM LOẠI ĐÚC & GỖ LIM CỔ KÍNH (KHÔNG DÙNG TRONG SUỐT / OUTLINE)
+   ========================================================================= */
 
-/* Tấm kim loại rèn / Thép nòng súng */
-.steel-panel {
-  background: linear-gradient(180deg, #1f242c 0%, #15191f 50%, #0d1014 100%);
-  border: 1px solid #3e4856;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.7);
+/* 1. NÚT KIM LOẠI ĐỒNG THAU ĐÚC (SOLID BRONZE MEDAL) */
+.btn-material-bronze {
+  background: linear-gradient(180deg, #6c4b28 0%, #4a3219 50%, #2e1d0d 100%) !important;
+  border: 1.5px solid #a8793b !important;
+  border-top: 1.5px solid #d8a65c !important;
+  border-bottom: 2px solid #140b03 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.6) !important;
+  color: #faebd7 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+  font-weight: 700 !important;
+}
+.btn-material-bronze:hover {
+  background: linear-gradient(180deg, #7d5730 0%, #593c20 50%, #3a2512 100%) !important;
+  border-color: #c9934d !important;
+  color: #ffffff !important;
+}
+.btn-material-bronze:active {
+  transform: translateY(1px) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Gỗ lim già / Bảng gỗ sơn mài cổ kính */
+/* 2. NÚT SẮT THÉP RÈN NÒNG SÚNG (SOLID FORGED STEEL) */
+.btn-material-iron {
+  background: linear-gradient(180deg, #374151 0%, #232a35 50%, #151a22 100%) !important;
+  border: 1.5px solid #526074 !important;
+  border-top: 1.5px solid #7b8ea7 !important;
+  border-bottom: 2px solid #080a0e !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.6) !important;
+  color: #e5edf7 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+  font-weight: 600 !important;
+}
+.btn-material-iron:hover {
+  background: linear-gradient(180deg, #445063 0%, #2d3644 50%, #1d232e 100%) !important;
+  border-color: #6d809c !important;
+  color: #ffffff !important;
+}
+.btn-material-iron:active {
+  transform: translateY(1px) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 3. NÚT GỖ LIM NGUYÊN KHỐI (SOLID CARVED WOOD) */
+.btn-material-wood {
+  background: linear-gradient(180deg, #3d2315 0%, #26150b 50%, #150b05 100%) !important;
+  border: 1.5px solid #6b4728 !important;
+  border-top: 1.5px solid #946138 !important;
+  border-bottom: 2px solid #080402 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  color: #ede4dc !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+  font-weight: 600 !important;
+}
+.btn-material-wood:hover {
+  background: linear-gradient(180deg, #4c2d1b 0%, #341d10 50%, #1f1007 100%) !important;
+  border-color: #8c5d35 !important;
+  color: #ffffff !important;
+}
+
+/* BẢNG GỖ LIM CỔ KÍNH DÀY NGUYÊN KHỐI */
 .wood-panel {
   background: linear-gradient(180deg, #261912 0%, #1b110b 60%, #110b07 100%);
-  border: 1px solid #5a3d28;
-  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.12), 0 10px 30px rgba(0, 0, 0, 0.85);
+  border: 2px solid #5a3d28;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.15), 0 12px 36px rgba(0, 0, 0, 0.95);
 }
 
-/* Khung đồng cổ / Thau thau hoa văn Đông Sơn */
-.bronze-frame {
-  border: 1.5px solid #8e7343;
-  box-shadow: inset 0 0 12px rgba(142, 115, 67, 0.15), 0 4px 16px rgba(0, 0, 0, 0.6);
-}
-
-/* Viền thép đinh tán cổ */
-.iron-frame {
-  border: 1.5px solid #4a5360;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 14px rgba(0, 0, 0, 0.7);
-}
-
-/* Điểm nhấn ánh kim đồng trầm (Thay thế hoàn toàn ánh sáng Neon) */
+/* CHỮ ÁNH KIM ĐỒNG CỔ */
 .metallic-gold-text {
-  background: linear-gradient(180deg, #f3e5ab 0%, #d4af37 50%, #aa8222 100%);
+  background: linear-gradient(180deg, #f7e8b6 0%, #d4af37 50%, #9e751b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.metallic-silver-text {
-  background: linear-gradient(180deg, #f0f4f8 0%, #c9d2de 50%, #8590a0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Scrollbar giả kim / gỗ cổ */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -73,7 +109,4 @@
   background: #5a3f28;
   border-radius: 3px;
   border: 1px solid #3d2919;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #8e6c43;
 }
