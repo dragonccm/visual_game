@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #0c0a09;
+    color: #f5f5f4;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  h1, h2, h3, .font-serif-epic {
+    font-family: 'Cinzel', 'Playfair Display', serif;
+  }
+}
+
+/* Custom historical glow & animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(225, 29, 72, 0.4), inset 0 0 15px rgba(225, 29, 72, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(225, 29, 72, 0.8), inset 0 0 25px rgba(225, 29, 72, 0.4);
+  }
+}
+
+@keyframes gold-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.4), inset 0 0 10px rgba(234, 179, 8, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(234, 179, 8, 0.8), inset 0 0 20px rgba(234, 179, 8, 0.4);
+  }
+}
+
+.glow-crimson {
+  animation: pulse-glow 3s infinite ease-in-out;
+}
+
+.glow-gold {
+  animation: gold-glow 3s infinite ease-in-out;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.6);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.9);
+}
