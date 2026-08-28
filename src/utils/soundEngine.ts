@@ -17,7 +17,7 @@ export type SFXType =
 
 export type BGMType = 'epic_war' | 'suspense' | 'victory' | 'calm';
 
-// 100% Real Audio Asset Engine (Loại bỏ hoàn toàn các âm thanh tổng hợp giả lập)
+// 100% Studio Fantasy SFX Engine (Sử dụng toàn bộ kho âm thanh TomMusic)
 class SoundEngine {
   private isMuted: boolean = false;
   private isVoiceEnabled: boolean = true;
@@ -26,7 +26,6 @@ class SoundEngine {
   private currentBgmType: BGMType | null = null;
 
   public unlockAudio() {
-    // Dummy audio touch to satisfy browser autoplay policy on initial interaction
     try {
       const dummy = new Audio();
       dummy.play().catch(() => {});
@@ -64,7 +63,7 @@ class SoundEngine {
     return this.isVoiceEnabled;
   }
 
-  // --- 1. LỒNG TIẾNG THỰC TẾ 100% (STUDIO MP3 VOICES) ---
+  // --- 1. LỒNG TIẾNG CHUẨN TIẾNG VIỆT 100% (STUDIO MP3 VOICES) ---
   public speakDialogue(dialogueId: string, _text?: string, _speaker?: CharacterId) {
     if (this.isMuted || !this.isVoiceEnabled) return;
     this.stopSpeech();
@@ -98,38 +97,43 @@ class SoundEngine {
     }
   }
 
-  // --- 2. HIỆU ỨNG ÂM THANH THỰC TẾ 100% (REAL SFX MP3 ASSETS) ---
+  // --- 2. HIỆU ỨNG ÂM THANH CHÂN THỰC TỪ TOMMUSIC SFX PACK ---
   public playSFX(type: SFXType) {
     if (this.isMuted) return;
 
     try {
       let filename = type;
-      if (type === 'splash') filename = 'waves'; // Map splash to real waves sound
+      if (type === 'splash') filename = 'waves';
 
-      const sfxUrl = `/assets/audio/sfx/${filename}.mp3`;
+      const sfxUrl = `/assets/audio/sfx/${filename}.ogg`;
       const audio = new Audio(sfxUrl);
 
-      // Volume calibration
-      if (type === 'horn') {
-        audio.volume = 0.85;
-      } else if (type === 'fire') {
-        audio.volume = 0.6;
-      } else if (type === 'gong') {
-        audio.volume = 0.75;
+      // Volume settings
+      if (type === 'fire') {
+        audio.volume = 0.55;
+      } else if (type === 'waves' || type === 'wind') {
+        audio.volume = 0.65;
+      } else if (type === 'clash' || type === 'arrow') {
+        audio.volume = 0.8;
       } else {
         audio.volume = 0.75;
       }
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise.catch(() => {
+          // Try mp3 extension fallback
+          const fallbackAudio = new Audio(`/assets/audio/sfx/${filename}.mp3`);
+          fallbackAudio.volume = audio.volume;
+          fallbackAudio.play().catch(() => {});
+        });
       }
     } catch (err) {
       console.warn(`[SFX] Could not play sfx ${type}:`, err);
     }
   }
 
-  // --- 3. NHẠC NỀN THỰC TẾ 100% (REAL BGM MP3 ASSETS) ---
+  // --- 3. NHẠC NỀN & AMBIENT LOOPS TỪ TOMMUSIC PACK ---
   public playBGM(type: BGMType) {
     if (this.isMuted) return;
     if (this.currentBgmType === type && this.currentBgmAudio && !this.currentBgmAudio.paused) return;
@@ -138,15 +142,21 @@ class SoundEngine {
     this.currentBgmType = type;
 
     try {
-      const bgmUrl = `/assets/audio/bgm/${type}.mp3`;
+      const bgmUrl = `/assets/audio/bgm/${type}.ogg`;
       const audio = new Audio(bgmUrl);
       this.currentBgmAudio = audio;
       audio.loop = true;
-      audio.volume = 0.28; // Subtle background ambience
+      audio.volume = 0.35; // Ambient background volume
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise.catch(() => {
+          const fallbackAudio = new Audio(`/assets/audio/bgm/${type}.mp3`);
+          fallbackAudio.loop = true;
+          fallbackAudio.volume = 0.35;
+          this.currentBgmAudio = fallbackAudio;
+          fallbackAudio.play().catch(() => {});
+        });
       }
     } catch (err) {
       console.warn(`[BGM] Could not play bgm ${type}:`, err);
