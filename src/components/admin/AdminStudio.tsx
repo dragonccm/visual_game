@@ -240,6 +240,9 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLe
             <h1 className="text-base sm:text-lg font-bold font-serif text-amber-200 tracking-wide flex items-center gap-2">
               <Sliders className="w-5 h-5 text-amber-400" />
               Studio Quản Trị & Sáng Tạo Màn Chơi
+              <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950/80 text-sky-300 border border-sky-700/70 font-mono flex items-center gap-1 font-normal">
+                ☁️ Cloudinary CDN
+              </span>
             </h1>
             <p className="text-[11px] text-stone-400">
               Tạo, chỉnh sửa, tải lên hình ảnh / âm thanh và quản lý các kịch bản lịch sử
