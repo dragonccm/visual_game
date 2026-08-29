@@ -77,7 +77,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               </span>
             )}
           </div>
-          <h2 className="text-xs md:text-sm font-bold text-[#f5ebd9] font-serif-epic truncate max-w-xs">
+          <h2 className="text-xs md:text-sm font-bold text-[#f5ebd9] truncate max-w-xs">
             {scene.title}
           </h2>
         </div>
@@ -110,7 +110,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               style={{ width: `${Math.min(Math.max(morale, 0), 100)}%` }}
             />
           </div>
-          <span className="text-[#faebd7] font-mono text-xs">{morale}</span>
+          <span className="text-[#faebd7] text-xs font-bold">{morale}</span>
         </div>
 
         {/* Study Mode Toggle */}

@@ -37,7 +37,7 @@ export const StoryFlowchartModal: React.FC<StoryFlowchartModalProps> = ({
               <GitBranch className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg md:text-xl font-black metallic-gold-title font-serif">
+              <h2 className="text-lg md:text-xl font-black metallic-gold-title">
                 CÂY NHÁNH KỊCH BẢN & KẾT CỤC
               </h2>
               <p className="text-xs text-[#b89f88] font-bold">
@@ -88,7 +88,7 @@ export const StoryFlowchartModal: React.FC<StoryFlowchartModalProps> = ({
                       )}
                     </div>
 
-                    <h4 className="text-sm font-bold text-stone-100 line-clamp-1 font-serif">
+                    <h4 className="text-sm font-bold text-stone-100 line-clamp-1">
                       {sc.title}
                     </h4>
 

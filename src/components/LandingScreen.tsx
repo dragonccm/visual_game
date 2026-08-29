@@ -37,7 +37,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#0a0705] flex flex-col justify-between select-none font-sans">
+    <div className="relative w-full h-screen overflow-hidden bg-[#0a0705] flex flex-col justify-between select-none">
       {/* Background Image with Deep Dark Vignette */}
       <div className="absolute inset-0 z-0">
         <img
@@ -55,7 +55,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
             <Shield className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-base font-black tracking-widest text-[#faebd7] uppercase font-serif">
+            <h1 className="text-base font-black tracking-widest text-[#faebd7] uppercase">
               Sử Ký Đại Việt
             </h1>
             <p className="text-[11px] text-[#b89f88] font-bold tracking-wider">

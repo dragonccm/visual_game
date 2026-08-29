@@ -167,7 +167,7 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
 
         {/* Dialogue Text Area */}
         <div className="min-h-[60px] md:min-h-[72px] flex items-center">
-          <p className="text-sm md:text-base text-[#faebd7] font-medium leading-relaxed font-sans tracking-wide">
+          <p className="text-sm md:text-base text-[#faebd7] font-medium leading-relaxed tracking-wide">
             {displayedText}
             {isTyping && (
               <span className="inline-block w-1.5 h-4 ml-1 bg-[#d4af37] animate-pulse" />

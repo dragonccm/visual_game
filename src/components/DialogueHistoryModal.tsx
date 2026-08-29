@@ -23,7 +23,7 @@ export const DialogueHistoryModal: React.FC<DialogueHistoryModalProps> = ({
         <div className="px-5 py-3.5 border-b border-[#3b2718] flex items-center justify-between bg-[#120c08]/90">
           <div className="flex items-center gap-2">
             <History className="w-4 h-4 text-[#d4af37]" />
-            <h3 className="text-base font-bold metallic-gold-text font-serif-epic">
+            <h3 className="text-base font-bold metallic-gold-text">
               Nhật Ký Đàm Thoại
             </h3>
           </div>
@@ -45,7 +45,7 @@ export const DialogueHistoryModal: React.FC<DialogueHistoryModalProps> = ({
               return (
                 <div key={idx} className="bg-[#170f0a] rounded-xl p-3 border border-[#382618]">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2 py-0.5 rounded text-[11px] font-bold text-[#f2e7dc] uppercase font-serif-epic bg-[#362215] border border-[#5a3f28]">
+                    <span className="px-2 py-0.5 rounded text-[11px] font-bold text-[#f2e7dc] uppercase bg-[#362215] border border-[#5a3f28]">
                       {char.name}
                     </span>
                   </div>

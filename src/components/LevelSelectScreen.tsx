@@ -119,7 +119,7 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
             <Shield className="w-3.5 h-3.5 text-amber-400" />
             <span>Màn Hình Chọn Màn Chơi</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-amber-100 font-serif tracking-wide drop-shadow-lg">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-amber-100 tracking-wide drop-shadow-lg">
             CHỌN CHIẾN DỊCH LỊCH SỬ
           </h1>
           <p className="text-xs sm:text-sm text-stone-400 max-w-2xl mx-auto leading-relaxed">
@@ -167,13 +167,13 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                     {hasCompleted && (
                       <div className="absolute top-3.5 right-3.5 flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-950/90 text-emerald-200 border border-emerald-600 text-xs font-bold shadow-md">
                         <Award className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Đã Hoàn Thành</span>
+                        <span>Đã Hoành Thành</span>
                       </div>
                     )}
 
                     {/* Subtitle on image bottom */}
                     <div className="absolute bottom-3 left-4 right-4">
-                      <p className="text-xs text-amber-300 font-serif italic line-clamp-1 drop-shadow-md">
+                      <p className="text-xs text-amber-300 italic line-clamp-1 drop-shadow-md">
                         {lvl.subtitle}
                       </p>
                     </div>
@@ -182,7 +182,7 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
                   {/* Card Body */}
                   <div className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col justify-between bg-[#1b140e]">
                     <div className="space-y-2.5">
-                      <h2 className="text-xl sm:text-2xl font-bold font-serif text-amber-100 group-hover:text-amber-300 transition-colors">
+                      <h2 className="text-xl sm:text-2xl font-bold text-amber-100 group-hover:text-amber-300 transition-colors">
                         {lvl.title}
                       </h2>
                       <p className="text-xs text-stone-300 leading-relaxed line-clamp-3">

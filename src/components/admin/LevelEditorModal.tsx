@@ -301,9 +301,9 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               🛠️
             </div>
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-amber-200 font-serif tracking-wide flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-amber-200 tracking-wide flex items-center gap-2">
                 Trình Soạn Thảo Màn Chơi Toàn Năng
-                <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-700 font-mono">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-700">
                   ☁️ Cloudinary Enabled
                 </span>
               </h2>
@@ -458,16 +458,16 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                         }`}
                       >
                         <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-xs font-bold text-stone-100 truncate flex-1 font-serif">
+                          <span className="text-xs font-bold text-stone-100 truncate flex-1">
                             {idx + 1}. {s.title}
                           </span>
                           {isStart && (
-                            <span className="text-[9px] px-1.5 py-0.2 bg-amber-950 text-amber-200 rounded border border-amber-600 font-mono font-bold">
+                            <span className="text-[9px] px-1.5 py-0.2 bg-amber-950 text-amber-200 rounded border border-amber-600 font-bold">
                               START
                             </span>
                           )}
                           {s.isEnding && (
-                            <span className="text-[9px] px-1.5 py-0.2 bg-emerald-950 text-emerald-200 rounded border border-emerald-600 font-mono font-bold">
+                            <span className="text-[9px] px-1.5 py-0.2 bg-emerald-950 text-emerald-200 rounded border border-emerald-600 font-bold">
                               END
                             </span>
                           )}
@@ -716,7 +716,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                               value={diag.text}
                               onChange={(e) => handleUpdateDialogue(dIdx, { text: e.target.value })}
                               placeholder="Nhập nội dung lời thoại nhân vật..."
-                              className="w-full bg-[#0d0906] text-stone-100 text-xs px-3 py-2.5 rounded-lg border border-[#4a3525] focus:outline-none focus:border-amber-500 leading-relaxed font-sans"
+                              className="w-full bg-[#0d0906] text-stone-100 text-xs px-3 py-2.5 rounded-lg border border-[#4a3525] focus:outline-none focus:border-amber-500 leading-relaxed"
                             />
 
                             {/* SFX, BGM & Cloudinary Voice Audio */}
@@ -890,7 +890,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                             type="number"
                             value={choice.moraleChange ?? 10}
                             onChange={(e) => handleUpdateChoice(cIdx, { moraleChange: parseInt(e.target.value) || 0 })}
-                            className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#3d2a1c] font-mono"
+                            className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#3d2a1c]"
                           />
                         </div>
 
@@ -1008,7 +1008,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                         value={currentScene.endingTitle || ''}
                         onChange={(e) => handleUpdateScene('endingTitle', e.target.value)}
                         placeholder="Ví dụ: THIÊN THU ĐẠI THẮNG BẠCH ĐẰNG GIANG"
-                        className="w-full bg-[#150f0a] text-stone-100 text-xs px-3.5 py-2.5 rounded-lg border border-[#4a3525] font-serif font-bold text-amber-200"
+                        className="w-full bg-[#150f0a] text-stone-100 text-xs px-3.5 py-2.5 rounded-lg border border-[#4a3525] font-bold text-amber-200"
                       />
                     </div>
 
@@ -1252,7 +1252,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       max={100}
                       value={formData.initialMorale}
                       onChange={(e) => updateField('initialMorale', parseInt(e.target.value) || 80)}
-                      className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2.5 rounded border border-[#4a3525] font-mono"
+                      className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2.5 rounded border border-[#4a3525]"
                     />
                   </div>
 
@@ -1334,7 +1334,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                             )}
                           </div>
 
-                          <h4 className="text-sm font-bold text-stone-100 font-serif line-clamp-1">
+                          <h4 className="text-sm font-bold text-stone-100 line-clamp-1">
                             {sc.title}
                           </h4>
 

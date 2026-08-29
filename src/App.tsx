@@ -363,7 +363,7 @@ export function App() {
 
   // 4. Playing Visual Novel / Ending
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#0c0805] select-none font-sans">
+    <div className="relative w-full h-screen overflow-hidden bg-[#0c0805] select-none">
       {/* Background Image Display */}
       {currentScene && (
         <div className="absolute inset-0 z-0 transition-opacity duration-700 ease-in-out">

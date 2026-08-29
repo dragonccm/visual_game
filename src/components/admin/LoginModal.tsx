@@ -53,7 +53,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
           <div className="w-12 h-12 rounded-xl btn-material-bronze flex items-center justify-center mx-auto text-amber-200 shadow-md">
             <Lock className="w-6 h-6" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold font-serif text-amber-100 tracking-wide">
+          <h2 className="text-xl sm:text-2xl font-bold text-amber-100 tracking-wide">
             ĐĂNG NHẬP QUẢN TRỊ VIÊN
           </h2>
           <p className="text-xs text-stone-400 leading-relaxed max-w-xs mx-auto">
@@ -104,7 +104,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
           <div className="bg-[#120d09] rounded-lg p-3 border border-[#3d2a1c] text-[11px] text-stone-400 flex items-center justify-between">
             <div>
               <span className="text-stone-300 font-bold block mb-0.5">Tài khoản mặc định:</span>
-              <span>User: <strong className="text-amber-300 font-mono">admin</strong> | Pass: <strong className="text-amber-300 font-mono">admin123</strong></span>
+              <span>User: <strong className="text-amber-300">admin</strong> | Pass: <strong className="text-amber-300">admin123</strong></span>
             </div>
             <button
               type="button"

@@ -118,7 +118,7 @@ export const AssetUploader: React.FC<AssetUploaderProps> = ({
           {label}
         </label>
         {value && (
-          <span className="text-[10px] text-stone-300 flex items-center gap-1 font-mono">
+          <span className="text-[10px] text-stone-300 flex items-center gap-1">
             {isCloudinary ? (
               <span className="text-sky-300 flex items-center gap-1 bg-sky-950/70 px-1.5 py-0.5 rounded border border-sky-700/60">
                 <Cloud className="w-3 h-3 text-sky-400" />
@@ -148,7 +148,7 @@ export const AssetUploader: React.FC<AssetUploaderProps> = ({
             disabled={isUploading}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full bg-[#120f0c] text-stone-200 text-xs px-3 py-2 rounded border border-[#4a3525] focus:outline-none focus:border-amber-500 font-mono transition-colors disabled:opacity-50"
+            className="w-full bg-[#120f0c] text-stone-200 text-xs px-3 py-2 rounded border border-[#4a3525] focus:outline-none focus:border-amber-500 transition-colors disabled:opacity-50"
           />
           {value && !isUploading && (
             <button
@@ -254,7 +254,7 @@ export const AssetUploader: React.FC<AssetUploaderProps> = ({
           <img src={value} alt="Preview" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
             <span className="text-[10px] text-amber-200 font-bold">Bản xem trước hình ảnh</span>
-            <span className="text-[9px] text-stone-400 truncate max-w-full font-mono mt-0.5">{value}</span>
+            <span className="text-[9px] text-stone-400 truncate max-w-full mt-0.5">{value}</span>
           </div>
         </div>
       )}

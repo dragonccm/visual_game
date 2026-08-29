@@ -100,7 +100,7 @@ export const EndingScreen: React.FC<EndingScreenProps> = ({
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl sm:text-4xl font-black text-[#faebd7] font-serif-epic mb-2 tracking-wide">
+        <h2 className="text-2xl sm:text-4xl font-black text-[#faebd7] mb-2 tracking-wide">
           {scene.endingTitle || scene.title}
         </h2>
 
@@ -126,7 +126,7 @@ export const EndingScreen: React.FC<EndingScreenProps> = ({
             <span className="block text-[10px] uppercase font-bold text-[#b89f88] tracking-widest mb-1">
               Xếp Hạng Binh Pháp
             </span>
-            <span className={`text-3xl sm:text-4xl font-black font-serif-epic ${rank.color}`}>
+            <span className={`text-3xl sm:text-4xl font-black ${rank.color}`}>
               {rank.grade}
             </span>
           </div>
@@ -135,7 +135,7 @@ export const EndingScreen: React.FC<EndingScreenProps> = ({
             <span className="block text-[10px] uppercase font-bold text-[#b89f88] tracking-widest mb-1">
               Nhuệ Khí Cuối Cùng
             </span>
-            <span className="text-3xl sm:text-4xl font-black text-[#faebd7] font-mono">
+            <span className="text-3xl sm:text-4xl font-black text-[#faebd7]">
               {morale}
             </span>
           </div>

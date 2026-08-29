@@ -237,10 +237,10 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLe
           </button>
           <div className="h-6 w-px bg-[#3d2a1c] hidden sm:block" />
           <div>
-            <h1 className="text-base sm:text-lg font-bold font-serif text-amber-200 tracking-wide flex items-center gap-2">
+            <h1 className="text-base sm:text-lg font-bold text-amber-200 tracking-wide flex items-center gap-2">
               <Sliders className="w-5 h-5 text-amber-400" />
               Studio Quản Trị & Sáng Tạo Màn Chơi
-              <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950/80 text-sky-300 border border-sky-700/70 font-mono flex items-center gap-1 font-normal">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950/80 text-sky-300 border border-sky-700/70 flex items-center gap-1 font-normal">
                 ☁️ Cloudinary CDN
               </span>
             </h1>
@@ -304,11 +304,11 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLe
         <div className="flex flex-wrap items-center justify-between gap-4 bg-[#160f0a]/90 p-4 rounded-xl border border-[#3d2a1c]">
           <div className="flex items-center gap-4 text-xs">
             <span className="text-stone-400">
-              Tổng số chiến dịch: <strong className="text-amber-300 font-mono text-sm">{levels.length}</strong>
+              Tổng số chiến dịch: <strong className="text-amber-300 text-sm">{levels.length}</strong>
             </span>
             <span className="text-stone-500">•</span>
             <span className="text-stone-400">
-              Màn tùy biến: <strong className="text-emerald-400 font-mono text-sm">{levels.filter((l) => !l.isDefault).length}</strong>
+              Màn tùy biến: <strong className="text-emerald-400 text-sm">{levels.filter((l) => !l.isDefault).length}</strong>
             </span>
           </div>
 
@@ -372,7 +372,7 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLe
 
                     {/* Content */}
                     <div className="p-4 space-y-2.5">
-                      <h3 className="text-base font-bold text-amber-100 font-serif line-clamp-1 group-hover:text-amber-300 transition-colors">
+                      <h3 className="text-base font-bold text-amber-100 line-clamp-1 group-hover:text-amber-300 transition-colors">
                         {lvl.title}
                       </h3>
                       <p className="text-[11px] text-stone-400 line-clamp-2 leading-relaxed">
