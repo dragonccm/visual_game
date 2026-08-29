@@ -9,6 +9,7 @@ interface DialogueBoxProps {
   onNext: () => void;
   isLastDialogue: boolean;
   hasChoices: boolean;
+  characters?: Record<string, CharacterInfo>;
 }
 
 export const DialogueBox: React.FC<DialogueBoxProps> = ({
@@ -16,12 +17,22 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
   onNext,
   isLastDialogue,
   hasChoices,
+  characters = CHARACTERS,
 }) => {
   const [displayedText, setDisplayedText] = useState<string>('');
   const [isTyping, setIsTyping] = useState<boolean>(true);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(false);
 
-  const character: CharacterInfo = CHARACTERS[dialogue.speaker] || CHARACTERS.narrator;
+  const character: CharacterInfo = characters[dialogue.speaker] ||
+    CHARACTERS[dialogue.speaker] || {
+      id: dialogue.speaker,
+      name: dialogue.speakerName || dialogue.speaker,
+      title: 'Nhân vật',
+      faction: 'viet',
+      avatar: '/assets/images/characters/ngo_quyen.jpg',
+      fullImage: '/assets/images/characters/ngo_quyen.jpg',
+      themeColor: '#e11d48',
+    };
 
   // Typewriter effect & Audio speech trigger
   useEffect(() => {
@@ -29,14 +40,14 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
     setIsTyping(true);
 
     if (dialogue.soundEffect) {
-      soundEngine.playSFX(dialogue.soundEffect);
+      soundEngine.playSFX(dialogue.soundEffect, dialogue.soundEffectCustomUrl);
     }
     if (dialogue.bgm) {
-      soundEngine.playBGM(dialogue.bgm);
+      soundEngine.playBGM(dialogue.bgm, dialogue.bgmCustomUrl);
     }
 
-    // Play local high-definition Vietnamese voice audio
-    soundEngine.speakDialogue(dialogue.id, dialogue.text, dialogue.speaker);
+    // Play local high-definition Vietnamese voice audio or custom uploaded voice
+    soundEngine.speakDialogue(dialogue.id, dialogue.customVoiceUrl);
 
     let currentIdx = 0;
     const fullText = dialogue.text;
@@ -76,95 +87,101 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
 
   const handleReplayVoice = (e: React.MouseEvent) => {
     e.stopPropagation();
-    soundEngine.speakDialogue(dialogue.id, dialogue.text, dialogue.speaker);
-    if (dialogue.soundEffect) {
-      soundEngine.playSFX(dialogue.soundEffect);
-    }
+    soundEngine.unlockAudio();
+    soundEngine.speakDialogue(dialogue.id, dialogue.customVoiceUrl);
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto z-20 select-none px-3 pb-4">
-      {/* Dialogue Main Container - Solid Carved Wood Panel & Bronze Corner Plates */}
+    <div className="absolute bottom-4 left-0 right-0 z-20 px-3 md:px-8 max-w-5xl mx-auto select-none">
       <div
         onClick={handleClickBox}
-        className="relative wood-panel rounded-2xl p-4 md:p-6 shadow-2xl cursor-pointer transition hover:border-[#8e7343] group"
+        className="wood-panel-solid rounded-2xl p-4 md:p-6 cursor-pointer shadow-2xl relative transition-all duration-200 hover:border-[#8f6842]"
       >
-        {/* Antique Bronze Corner Plates */}
-        <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#d4af37]" />
-        <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#d4af37]" />
-        <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#d4af37]" />
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#d4af37]" />
+        {/* Speaker Badge & Controls */}
+        <div className="flex items-center justify-between mb-2 md:mb-3 pb-2 border-b-2 border-[#3b2718]">
+          <div className="flex items-center gap-3">
+            {/* Character Avatar */}
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl overflow-hidden border-2 border-[#5a3d28] bg-[#0c0805] shadow-md shrink-0">
+              <img
+                src={character.avatar}
+                alt={character.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-        {/* Speaker Name Tag & Solid Material Control Buttons */}
-        <div className="flex items-center justify-between gap-3 mb-2.5 border-b border-[#3b2718] pb-2">
-          <div className="flex items-center gap-2">
-            <span className="px-3.5 py-1 rounded-md text-xs md:text-sm font-bold uppercase tracking-wider font-serif-epic text-[#faebd7] shadow-md btn-material-wood">
-              {character.name}
-            </span>
-            <span className="text-[11px] md:text-xs text-[#a69483] font-medium hidden sm:inline">
-              {character.title}
-            </span>
+            {/* Name & Title */}
+            <div>
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shadow-sm"
+                  style={{ backgroundColor: character.themeColor }}
+                />
+                <h3 className="text-sm md:text-base font-black tracking-wide text-[#faebd7]">
+                  {character.name}
+                </h3>
+              </div>
+              <span className="text-[10px] md:text-xs font-bold text-[#b89f88] block">
+                {character.title}
+              </span>
+            </div>
           </div>
 
-          {/* Solid Material Action Buttons (Đồng Thau & Sắt Thép Rèn Đặc) */}
-          <div className="flex items-center gap-2 text-xs" onClick={(e) => e.stopPropagation()}>
-            {/* Solid Forged Bronze Button */}
+          {/* Audio & Auto-play Controls */}
+          <div className="flex items-center gap-1.5 md:gap-2">
             <button
               onClick={handleReplayVoice}
-              title="Phát Lại Giọng Đọc (Lồng Tiếng Chuẩn)"
-              className="btn-material-bronze flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs cursor-pointer"
+              title="Nghe lại giọng đọc"
+              className="btn-material-bronze px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 text-[#faebd7] cursor-pointer"
             >
-              <Volume2 className="w-4 h-4 text-[#faebd7]" />
-              <span>Đọc Thoại</span>
+              <Volume2 className="w-4 h-4 text-[#ffd700]" />
+              <span className="hidden sm:inline">Đọc Thoại</span>
             </button>
 
-            {/* Solid Iron Button */}
             <button
-              onClick={() => setIsAutoPlay(!isAutoPlay)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs cursor-pointer ${
-                isAutoPlay ? 'btn-material-bronze' : 'btn-material-iron'
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsAutoPlay(!isAutoPlay);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer transition ${
+                isAutoPlay ? 'btn-material-bronze text-[#faebd7]' : 'btn-material-iron text-[#b89f88]'
               }`}
             >
               {isAutoPlay ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isAutoPlay ? 'Tự Động' : 'Thủ Công'}</span>
+              <span>{isAutoPlay ? 'Tự Động: BẬT' : 'Tự Động'}</span>
             </button>
 
-            {/* Solid Fast Forward Button */}
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setDisplayedText(dialogue.text);
                 setIsTyping(false);
+                onNext();
               }}
-              title="Hiện Nhanh Lời Thoại"
-              className="btn-material-iron p-1.5 rounded-lg text-xs cursor-pointer"
+              title="Bỏ qua"
+              className="btn-material-iron p-1.5 md:p-2 rounded-lg text-xs cursor-pointer"
             >
-              <FastForward className="w-4 h-4" />
+              <FastForward className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#b89f88]" />
             </button>
           </div>
         </div>
 
-        {/* Text Area */}
-        <div className="min-h-[55px] md:min-h-[65px] flex items-center">
-          <p className="text-[#f5ede3] text-base md:text-xl font-bold leading-relaxed tracking-wide">
+        {/* Dialogue Text Area */}
+        <div className="min-h-[60px] md:min-h-[72px] flex items-center">
+          <p className="text-sm md:text-base text-[#faebd7] font-medium leading-relaxed font-sans tracking-wide">
             {displayedText}
-            {isTyping && <span className="inline-block w-2.5 h-5 ml-1 bg-[#d4af37] animate-pulse align-middle" />}
+            {isTyping && (
+              <span className="inline-block w-1.5 h-4 ml-1 bg-[#d4af37] animate-pulse" />
+            )}
           </p>
         </div>
 
-        {/* Advance Click Indicator */}
-        <div className="flex justify-end items-center mt-2 pt-1">
-          {(!isLastDialogue || !hasChoices) && (
-            <div className="flex items-center gap-1 text-xs text-[#d4af37] font-bold uppercase tracking-wider animate-bounce">
-              <span>{isTyping ? 'Nhấn để hiện hết' : 'Tiếp tục'}</span>
-              <ChevronRight className="w-4 h-4" />
-            </div>
-          )}
-          {isLastDialogue && hasChoices && (
-            <div className="text-xs text-[#d4af37] font-bold uppercase tracking-widest animate-pulse flex items-center gap-1">
-              <span>⚔️ Đưa Ra Quyết Sách...</span>
-            </div>
-          )}
-        </div>
+        {/* Next Indicator */}
+        {!isTyping && !isLastDialogue && (
+          <div className="absolute right-4 bottom-3 flex items-center gap-1 text-[11px] font-bold text-[#d4af37] animate-bounce">
+            <span>Nhấn tiếp tục</span>
+            <ChevronRight className="w-4 h-4" />
+          </div>
+        )}
       </div>
     </div>
   );

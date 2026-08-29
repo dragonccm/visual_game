@@ -1,19 +1,21 @@
 import React from 'react';
-import { CharacterId } from '../types/game';
+import { CharacterId, CharacterInfo } from '../types/game';
 import { CHARACTERS } from '../data/characters';
 
 interface CharacterSpriteDisplayProps {
   currentSpeaker: CharacterId;
   emotion?: 'normal' | 'intense' | 'confident' | 'angry' | 'triumphant';
+  characters?: Record<string, CharacterInfo>;
 }
 
 export const CharacterSpriteDisplay: React.FC<CharacterSpriteDisplayProps> = ({
   currentSpeaker,
   emotion,
+  characters = CHARACTERS,
 }) => {
   if (currentSpeaker === 'narrator') return null;
 
-  const character = CHARACTERS[currentSpeaker];
+  const character = characters[currentSpeaker] || CHARACTERS[currentSpeaker];
   if (!character || !character.fullImage) return null;
 
   const isLeft = character.faction === 'viet';

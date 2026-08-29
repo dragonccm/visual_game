@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { CHARACTERS } from '../data/characters';
 import { CharacterId } from '../types/game';
 import { soundEngine } from '../utils/soundEngine';
-import { Shield, Volume2, VolumeX, Sword, Play } from 'lucide-react';
+import { Shield, Volume2, VolumeX, Sword, Play, ListOrdered, Sliders } from 'lucide-react';
 
 interface LandingScreenProps {
   onStartGame: (playerName: string, selectedHero: CharacterId) => void;
+  onOpenLevelSelect: () => void;
+  onOpenAdmin: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
 }
 
 export const LandingScreen: React.FC<LandingScreenProps> = ({
   onStartGame,
+  onOpenLevelSelect,
+  onOpenAdmin,
   isMuted,
   onToggleMute,
 }) => {
@@ -45,38 +49,39 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
             <Shield className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-black tracking-wide text-[#f5ebd9] uppercase">
-              SỬ VIỆT HÙNG CA
+            <h1 className="text-base font-black tracking-widest text-[#faebd7] uppercase font-serif">
+              Sử Ký Đại Việt
             </h1>
-            <p className="text-[10px] text-[#b89f88] uppercase tracking-widest font-bold">
-              Interactive History Game Engine
+            <p className="text-[11px] text-[#b89f88] font-bold tracking-wider">
+              Nền Tảng Game Nhập Vai Lịch Sử Tương Tác
             </p>
           </div>
         </div>
 
-        <button
-          onClick={onToggleMute}
-          className="btn-material-iron flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs cursor-pointer"
-        >
-          {isMuted ? (
-            <>
-              <VolumeX className="w-4 h-4 text-[#e06d53]" />
-              <span>Âm thanh: Tắt</span>
-            </>
-          ) : (
-            <>
-              <Volume2 className="w-4 h-4 text-[#86b595]" />
-              <span>Âm thanh: Bật</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onOpenAdmin}
+            className="btn-material-wood px-3 py-2 rounded-lg text-xs font-bold text-amber-200 hover:text-amber-100 flex items-center gap-2 border border-[#5c4028] cursor-pointer"
+            title="Quản trị màn chơi & tải lên nội dung"
+          >
+            <Sliders className="w-4 h-4 text-amber-400" />
+            <span className="hidden sm:inline">Studio Quản Trị</span>
+          </button>
+
+          <button
+            onClick={onToggleMute}
+            className="btn-material-iron p-2.5 rounded-lg text-[#faebd7] hover:text-[#ffd700] transition cursor-pointer"
+            title={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'}
+          >
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </button>
+        </div>
       </header>
 
-      {/* Main Center Content */}
-      <main className="relative z-10 max-w-5xl mx-auto w-full px-4 py-3 flex flex-col md:flex-row items-center gap-8 justify-center my-auto">
-        {/* Left Side: Game Intro & Setup */}
+      {/* Center Hero Section */}
+      <div className="relative z-10 flex-1 max-w-6xl mx-auto w-full px-6 flex flex-col md:flex-row items-center justify-center gap-8 py-4">
+        {/* Left Side: Game Title & Controls */}
         <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
-          {/* Solid Bronze Timeline Badge */}
           <div className="btn-material-bronze inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider mb-3.5">
             <span className="w-2 h-2 rounded-full bg-[#faebd7] shadow-sm" />
             Năm 938 SCN • Khai Sinh Kỷ Nguyên Tự Chủ
@@ -107,14 +112,28 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
             </div>
           </div>
 
-          {/* Start Button - Heavy Solid Forged Bronze Plate */}
-          <button
-            onClick={handleStart}
-            className="btn-material-bronze group inline-flex items-center justify-center gap-3 px-9 py-4 rounded-xl text-base md:text-lg tracking-wider uppercase cursor-pointer"
-          >
-            <Play className="w-5 h-5 fill-current text-[#faebd7]" />
-            <span>Bước Vào Lịch Sử</span>
-          </button>
+          {/* Action Buttons: Play Default & Level Select */}
+          <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start w-full">
+            <button
+              onClick={handleStart}
+              className="btn-material-bronze group inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl text-base md:text-lg tracking-wider uppercase cursor-pointer shadow-lg"
+            >
+              <Play className="w-5 h-5 fill-current text-[#faebd7]" />
+              <span>Bước Vào Lịch Sử</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundEngine.unlockAudio();
+                soundEngine.playSFX('horn');
+                onOpenLevelSelect();
+              }}
+              className="btn-material-wood inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-sm md:text-base tracking-wider uppercase cursor-pointer border border-[#5c4028] text-amber-200 hover:text-amber-100 shadow-md"
+            >
+              <ListOrdered className="w-4 h-4 text-amber-400" />
+              <span>Chọn Chiến Dịch</span>
+            </button>
+          </div>
         </div>
 
         {/* Right Side: Hero Roster Preview - Solid Carved Lim Wood Chest Panel */}
@@ -159,40 +178,37 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
             })}
           </div>
 
-          {/* Selected Character Detail Card - Solid Dark Wood Box */}
-          {previewChar && (
-            <div className="card-solid-dark rounded-xl p-3.5 flex gap-3 items-center border-2 border-[#5a3d28]">
-              <div className="w-16 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 border-[#8e7343] shadow-md">
-                <img
-                  src={CHARACTERS[previewChar].avatar}
-                  alt={CHARACTERS[previewChar].name}
-                  className="w-full h-full object-cover"
+          {/* Hero Bio Display */}
+          {CHARACTERS[previewChar] && (
+            <div className="bg-[#120d09] rounded-xl p-3.5 border-2 border-[#3b2718]">
+              <div className="flex items-center gap-2 mb-1">
+                <span
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: CHARACTERS[previewChar].themeColor }}
                 />
-              </div>
-              <div className="text-left flex-1 min-w-0">
-                <h4 className="text-sm font-black text-[#d4af37] truncate">
+                <span className="text-xs font-black text-[#faebd7]">
                   {CHARACTERS[previewChar].name}
-                </h4>
-                <p className="text-xs text-[#c4a682] font-bold mb-1 truncate">
-                  {CHARACTERS[previewChar].title}
-                </p>
-                <p className="text-[11px] text-[#b09e8f] line-clamp-2 leading-relaxed font-medium">
-                  {previewChar === 'ngo_quyen' &&
-                    'Bậc anh hùng kiệt xuất mưu lược định giang sơn, người khai sinh kế sách cọc ngầm Bạch Đằng.'}
-                  {previewChar === 'nguyen_tat_to' &&
-                    'Tướng tài thông thuộc sông nước duyên hải, trực tiếp chỉ huy đội thuyền tiên phong nhử địch.'}
-                  {previewChar === 'hoang_thao' &&
-                    'Vạn vương Nam Hán trẻ tuổi ngạo mạn, thống lĩnh soái hạm khổng lồ kéo sang xâm lấn.'}
-                </p>
+                </span>
+                <span className="text-[10px] text-[#b89f88] font-bold">
+                  ({CHARACTERS[previewChar].title})
+                </span>
               </div>
+              <p className="text-[11px] text-[#b89f88] leading-relaxed italic">
+                {previewChar === 'ngo_quyen' &&
+                  'Người anh hùng dân tộc với mưu lược phi thường, định đoạt số phận quân Nam Hán bằng trận địa cọc ngầm.'}
+                {previewChar === 'nguyen_tat_to' &&
+                  'Tướng quân quả cảm am tường con nước, thống lĩnh đội thuyền nhẹ nhử giặc vào tử địa.'}
+                {previewChar === 'hoang_thao' &&
+                  'Hoàng tử Nam Hán kiêu ngạo đem vạn chiến thuyền to lớn vượt biển hòng thôn tính bờ cõi.'}
+              </p>
             </div>
           )}
         </div>
-      </main>
+      </div>
 
-      {/* Footer Info */}
-      <footer className="relative z-10 w-full px-6 py-2.5 border-t-2 border-[#2b1c11] bg-[#0c0805] text-center text-xs text-[#8c7867] font-semibold">
-        Interactive History Game Engine • Thiết kế 100% Vật Liệu Sắt Thép Rèn & Gỗ Lim Đặc Khối
+      {/* Footer Bar */}
+      <footer className="relative z-10 w-full py-2.5 text-center text-[11px] font-bold text-[#8c7460] bg-[#0c0805] border-t border-[#261910] uppercase tracking-wider">
+        Sử Ký Trực Quan • Đại Trận Bạch Đằng Giang 938 • Giữ Vẹn Non Sông
       </footer>
     </div>
   );

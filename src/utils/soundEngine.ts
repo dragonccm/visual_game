@@ -1,5 +1,3 @@
-import { CharacterId } from '../types/game';
-
 export type SFXType =
   | 'drum'
   | 'horn'
@@ -13,17 +11,19 @@ export type SFXType =
   | 'wooden_crack'
   | 'fire'
   | 'battle_cry'
-  | 'gong';
+  | 'gong'
+  | string;
 
-export type BGMType = 'epic_war' | 'suspense' | 'victory' | 'calm';
+export type BGMType = 'epic_war' | 'suspense' | 'victory' | 'calm' | string;
 
-// 100% Studio Fantasy SFX Engine (Sử dụng toàn bộ kho âm thanh TomMusic)
+// 100% Real Fantasy & Custom SFX Engine
 class SoundEngine {
   private isMuted: boolean = false;
   private isVoiceEnabled: boolean = true;
   private currentVoiceAudio: HTMLAudioElement | null = null;
   private currentBgmAudio: HTMLAudioElement | null = null;
-  private currentBgmType: BGMType | null = null;
+  private currentBgmType: string | null = null;
+  private previewAudioElement: HTMLAudioElement | null = null;
 
   public unlockAudio() {
     try {
@@ -39,6 +39,7 @@ class SoundEngine {
     if (muted) {
       this.stopBGM();
       this.stopSpeech();
+      this.stopPreview();
     } else {
       if (this.currentBgmType) {
         const bgm = this.currentBgmType;
@@ -63,17 +64,17 @@ class SoundEngine {
     return this.isVoiceEnabled;
   }
 
-  // --- 1. LỒNG TIẾNG CHUẨN TIẾNG VIỆT 100% (STUDIO MP3 VOICES) ---
-  public speakDialogue(dialogueId: string, _text?: string, _speaker?: CharacterId) {
+  // --- 1. LỒNG TIẾNG CHUẨN TIẾNG VIỆT HOẶC CUSTOM VOICE ---
+  public speakDialogue(dialogueId: string, customVoiceUrl?: string) {
     if (this.isMuted || !this.isVoiceEnabled) return;
     this.stopSpeech();
 
     try {
-      const audioUrl = `/assets/audio/voices/${dialogueId}.mp3`;
+      const audioUrl = customVoiceUrl || `/assets/audio/voices/${dialogueId}.mp3`;
       const audio = new Audio(audioUrl);
       this.currentVoiceAudio = audio;
       audio.volume = 1.0;
-      audio.playbackRate = 1.18; // Tăng tốc độ đọc nhanh hơn và dứt khoát hơn
+      audio.playbackRate = 1.18;
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -98,16 +99,19 @@ class SoundEngine {
     }
   }
 
-  // --- 2. HIỆU ỨNG ÂM THANH CHÂN THỰC TỪ TOMMUSIC SFX PACK ---
-  public playSFX(type: SFXType) {
+  // --- 2. HIỆU ỨNG ÂM THANH SFX (KHO GỐC + TÙY BIẾN) ---
+  public playSFX(type: SFXType, customUrl?: string) {
     if (this.isMuted) return;
 
     try {
-      let filename = type;
-      if (type === 'splash') filename = 'waves';
+      let audioUrl = customUrl;
+      if (!audioUrl) {
+        let filename = type;
+        if (type === 'splash') filename = 'waves';
+        audioUrl = `/assets/audio/sfx/${filename}.ogg`;
+      }
 
-      const sfxUrl = `/assets/audio/sfx/${filename}.ogg`;
-      const audio = new Audio(sfxUrl);
+      const audio = new Audio(audioUrl);
 
       // Volume settings
       if (type === 'fire') {
@@ -123,10 +127,12 @@ class SoundEngine {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Try mp3 extension fallback
-          const fallbackAudio = new Audio(`/assets/audio/sfx/${filename}.mp3`);
-          fallbackAudio.volume = audio.volume;
-          fallbackAudio.play().catch(() => {});
+          if (!customUrl) {
+            // Try mp3 extension fallback
+            const fallbackAudio = new Audio(`/assets/audio/sfx/${type}.mp3`);
+            fallbackAudio.volume = audio.volume;
+            fallbackAudio.play().catch(() => {});
+          }
         });
       }
     } catch (err) {
@@ -134,8 +140,8 @@ class SoundEngine {
     }
   }
 
-  // --- 3. NHẠC NỀN & AMBIENT LOOPS TỪ TOMMUSIC PACK ---
-  public playBGM(type: BGMType) {
+  // --- 3. NHẠC NỀN & AMBIENT LOOPS BGM ---
+  public playBGM(type: BGMType, customUrl?: string) {
     if (this.isMuted) return;
     if (this.currentBgmType === type && this.currentBgmAudio && !this.currentBgmAudio.paused) return;
 
@@ -143,20 +149,22 @@ class SoundEngine {
     this.currentBgmType = type;
 
     try {
-      const bgmUrl = `/assets/audio/bgm/${type}.ogg`;
+      const bgmUrl = customUrl || `/assets/audio/bgm/${type}.ogg`;
       const audio = new Audio(bgmUrl);
       this.currentBgmAudio = audio;
       audio.loop = true;
-      audio.volume = 0.35; // Ambient background volume
+      audio.volume = 0.35;
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          const fallbackAudio = new Audio(`/assets/audio/bgm/${type}.mp3`);
-          fallbackAudio.loop = true;
-          fallbackAudio.volume = 0.35;
-          this.currentBgmAudio = fallbackAudio;
-          fallbackAudio.play().catch(() => {});
+          if (!customUrl) {
+            const fallbackAudio = new Audio(`/assets/audio/bgm/${type}.mp3`);
+            fallbackAudio.loop = true;
+            fallbackAudio.volume = 0.35;
+            this.currentBgmAudio = fallbackAudio;
+            fallbackAudio.play().catch(() => {});
+          }
         });
       }
     } catch (err) {
@@ -175,6 +183,46 @@ class SoundEngine {
       this.currentBgmAudio = null;
     }
     this.currentBgmType = null;
+  }
+
+  // --- 4. NGHE THỬ AUDIO CHO ADMIN EDITOR ---
+  public previewAudio(url: string, onEnded?: () => void): () => void {
+    this.stopPreview();
+    if (!url) return () => {};
+
+    try {
+      const audio = new Audio(url);
+      this.previewAudioElement = audio;
+      audio.volume = 0.9;
+      audio.onended = () => {
+        this.previewAudioElement = null;
+        if (onEnded) onEnded();
+      };
+      audio.play().catch((err) => {
+        console.warn('Preview play error:', err);
+        if (onEnded) onEnded();
+      });
+
+      return () => {
+        audio.pause();
+        audio.currentTime = 0;
+        this.previewAudioElement = null;
+      };
+    } catch {
+      return () => {};
+    }
+  }
+
+  public stopPreview() {
+    if (this.previewAudioElement) {
+      try {
+        this.previewAudioElement.pause();
+        this.previewAudioElement.currentTime = 0;
+      } catch {
+        // Ignore
+      }
+      this.previewAudioElement = null;
+    }
   }
 }
 

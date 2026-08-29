@@ -6,11 +6,11 @@ import {
   VolumeX,
   History,
   RotateCcw,
-  Award,
   GitBranch,
   GraduationCap,
   Mic,
   MicOff,
+  ListOrdered,
 } from 'lucide-react';
 import { SceneData } from '../types/game';
 
@@ -27,6 +27,7 @@ interface GameHUDProps {
   onOpenCodex: () => void;
   onOpenHistory: () => void;
   onOpenFlowchart: () => void;
+  onOpenLevelSelect?: () => void;
   onRestart: () => void;
 }
 
@@ -43,6 +44,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onOpenCodex,
   onOpenHistory,
   onOpenFlowchart,
+  onOpenLevelSelect,
   onRestart,
 }) => {
   const getTideBadge = () => {
@@ -98,24 +100,25 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         </div>
 
         {/* Morale Bar - Solid Wood & Bronze Style */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1 btn-material-wood rounded-lg">
-          <Award className="w-4 h-4 text-[#d4af37]" />
-          <span className="text-xs text-[#d6c8bc] font-bold">Khí Thế:</span>
-          <div className="w-16 bg-[#0f0a07] rounded h-2.5 overflow-hidden border border-[#5a3f28]">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-lg wood-panel-solid text-xs font-bold border border-[#5a3d28]">
+          <span className="text-[11px] text-[#faebd7]">Nhuệ Khí:</span>
+          <div className="w-16 md:w-24 bg-[#0a0705] h-3 rounded-full overflow-hidden border border-[#3b2718] p-0.5">
             <div
-              className="h-full transition-all duration-500 bg-gradient-to-r from-[#8c6d3b] via-[#c8963e] to-[#d4af37]"
-              style={{ width: `${Math.min(100, Math.max(10, morale))}%` }}
+              className={`h-full rounded-full transition-all duration-500 ${
+                morale >= 70 ? 'bg-[#b8860b]' : morale >= 40 ? 'bg-[#c85a17]' : 'bg-[#8b0000]'
+              }`}
+              style={{ width: `${Math.min(Math.max(morale, 0), 100)}%` }}
             />
           </div>
-          <span className="text-xs font-black text-[#d4af37]">{morale}</span>
+          <span className="text-[#faebd7] font-mono text-xs">{morale}</span>
         </div>
 
-        {/* Study Mode Toggle Solid Button */}
+        {/* Study Mode Toggle */}
         <button
           onClick={onToggleStudyMode}
-          title={studyMode ? 'Tắt Gợi Ý Học Tập' : 'Bật Gợi Ý Chính Sử Cho Học Viên'}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-md ${
-            studyMode ? 'btn-material-bronze' : 'btn-material-iron'
+          title={studyMode ? 'Tắt Gợi Ý Chính Sử' : 'Bật Gợi Ý Chính Sử (Chế Độ Học Tập)'}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition ${
+            studyMode ? 'btn-material-bronze text-[#faebd7]' : 'btn-material-iron text-[#b89f88]'
           }`}
         >
           <GraduationCap className="w-4 h-4" />
@@ -125,6 +128,17 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 
       {/* Right: Solid Material Action Buttons */}
       <div className="flex items-center gap-1.5 md:gap-2">
+        {onOpenLevelSelect && (
+          <button
+            onClick={onOpenLevelSelect}
+            title="Đổi Màn Chơi / Chọn Chiến Dịch Khác"
+            className="btn-material-wood flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-200 hover:text-amber-100 cursor-pointer border border-[#5c4028]"
+          >
+            <ListOrdered className="w-4 h-4 text-amber-400" />
+            <span className="hidden sm:inline">Đổi Màn</span>
+          </button>
+        )}
+
         <button
           onClick={onOpenFlowchart}
           title="Xem Cây Nhánh Kịch Bản"
