@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Sliders,
   CheckCircle,
+  LogOut,
 } from 'lucide-react';
 import { CampaignLevel } from '../../types/game';
 import { levelStorage } from '../../utils/levelStorage';
@@ -19,9 +20,10 @@ import { LevelEditorModal } from './LevelEditorModal';
 interface AdminStudioProps {
   onBackToMenu: () => void;
   onPlayLevel: (level: CampaignLevel) => void;
+  onLogout?: () => void;
 }
 
-export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLevel }) => {
+export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLevel, onLogout }) => {
   const [levels, setLevels] = useState<CampaignLevel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [editingLevel, setEditingLevel] = useState<CampaignLevel | null>(null);
@@ -271,6 +273,17 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({ onBackToMenu, onPlayLe
             <Plus className="w-4 h-4 text-amber-300" />
             <span>Tạo Màn Chơi Mới</span>
           </button>
+
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="btn-material-iron text-xs px-3 py-2 rounded flex items-center gap-1.5 text-stone-400 hover:text-red-300 cursor-pointer"
+              title="Đăng xuất Quản trị viên"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Đăng Xuất</span>
+            </button>
+          )}
         </div>
       </header>
 

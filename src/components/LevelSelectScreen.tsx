@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Play, Sliders, ArrowLeft, Award, Shield, User, RefreshCw } from 'lucide-react';
+import { Play, Sliders, ArrowLeft, Award, Shield, User, RefreshCw, Lock, LogOut } from 'lucide-react';
 import { CampaignLevel } from '../types/game';
 import { levelStorage } from '../utils/levelStorage';
 import { soundEngine } from '../utils/soundEngine';
@@ -8,7 +8,10 @@ interface LevelSelectScreenProps {
   playerName: string;
   onSelectLevel: (level: CampaignLevel) => void;
   onOpenAdmin: () => void;
+  onOpenLogin: () => void;
+  onLogout: () => void;
   onBackToLanding: () => void;
+  isAdmin: boolean;
   unlockedEndings: string[];
 }
 
@@ -16,7 +19,10 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
   playerName,
   onSelectLevel,
   onOpenAdmin,
+  onOpenLogin,
+  onLogout,
   onBackToLanding,
+  isAdmin,
   unlockedEndings,
 }) => {
   const [levels, setLevels] = useState<CampaignLevel[]>([]);
@@ -71,15 +77,38 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({
           </div>
         </div>
 
-        {/* Admin Studio Quick Entry */}
-        <button
-          onClick={onOpenAdmin}
-          className="btn-material-wood text-xs px-3.5 py-1.5 rounded flex items-center gap-1.5 text-amber-200 hover:text-amber-100 border border-[#5c4028] cursor-pointer"
-          title="Mở bảng điều khiển Admin để tạo hoặc sửa màn chơi"
-        >
-          <Sliders className="w-3.5 h-3.5 text-amber-400" />
-          <span className="font-medium">Studio Sáng Tạo (Admin)</span>
-        </button>
+        {/* Admin Studio / Login Entry */}
+        <div className="flex items-center gap-2">
+          {isAdmin ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onOpenAdmin}
+                className="btn-material-bronze text-xs px-3.5 py-1.5 rounded flex items-center gap-1.5 text-amber-100 font-bold cursor-pointer shadow-md"
+                title="Mở Studio Quản Trị"
+              >
+                <Sliders className="w-3.5 h-3.5 text-amber-300" />
+                <span>Studio Quản Trị</span>
+              </button>
+
+              <button
+                onClick={onLogout}
+                className="btn-material-iron p-1.5 rounded text-stone-400 hover:text-red-300 transition cursor-pointer"
+                title="Đăng xuất quyền Quản trị"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onOpenLogin}
+              className="btn-material-wood text-xs px-3 py-1.5 rounded flex items-center gap-1.5 text-amber-200 hover:text-amber-100 border border-[#5c4028] cursor-pointer"
+              title="Đăng nhập dành cho Quản trị viên tạo màn chơi"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-medium">Đăng Nhập Quản Trị</span>
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Main Container */}

@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { CHARACTERS } from '../data/characters';
 import { CharacterId } from '../types/game';
 import { soundEngine } from '../utils/soundEngine';
-import { Shield, Volume2, VolumeX, Sword, Play, ListOrdered, Sliders } from 'lucide-react';
+import { Shield, Volume2, VolumeX, Sword, Play, ListOrdered, Sliders, Lock, LogOut } from 'lucide-react';
 
 interface LandingScreenProps {
   onStartGame: (playerName: string, selectedHero: CharacterId) => void;
   onOpenLevelSelect: () => void;
   onOpenAdmin: () => void;
+  onOpenLogin: () => void;
+  onLogout: () => void;
+  isAdmin: boolean;
   isMuted: boolean;
   onToggleMute: () => void;
 }
@@ -16,6 +19,9 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
   onStartGame,
   onOpenLevelSelect,
   onOpenAdmin,
+  onOpenLogin,
+  onLogout,
+  isAdmin,
   isMuted,
   onToggleMute,
 }) => {
@@ -31,7 +37,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#0a0705] flex flex-col justify-between select-none">
+    <div className="relative w-full h-screen overflow-hidden bg-[#0a0705] flex flex-col justify-between select-none font-sans">
       {/* Background Image with Deep Dark Vignette */}
       <div className="absolute inset-0 z-0">
         <img
@@ -43,7 +49,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
       </div>
 
       {/* Top Header - Solid Wood Bar with Bronze Trim */}
-      <header className="relative z-10 w-full px-6 py-3.5 flex items-center justify-between border-b-2 border-[#422c1b] bg-[#120d09] shadow-2xl">
+      <header className="relative z-10 w-full px-4 sm:px-6 py-3 flex items-center justify-between border-b-2 border-[#422c1b] bg-[#120d09] shadow-2xl">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg btn-material-bronze flex items-center justify-center text-[#faebd7]">
             <Shield className="w-5 h-5" />
@@ -58,22 +64,44 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onOpenAdmin}
-            className="btn-material-wood px-3 py-2 rounded-lg text-xs font-bold text-amber-200 hover:text-amber-100 flex items-center gap-2 border border-[#5c4028] cursor-pointer"
-            title="Quản trị màn chơi & tải lên nội dung"
-          >
-            <Sliders className="w-4 h-4 text-amber-400" />
-            <span className="hidden sm:inline">Studio Quản Trị</span>
-          </button>
+        {/* Right Header: Admin / Login / Sound */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {isAdmin ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onOpenAdmin}
+                className="btn-material-bronze px-3 py-1.5 rounded-lg text-xs font-bold text-amber-100 flex items-center gap-1.5 cursor-pointer shadow-md"
+                title="Mở Studio Quản Trị để tạo và sửa màn chơi"
+              >
+                <Sliders className="w-3.5 h-3.5 text-amber-300" />
+                <span>Studio Quản Trị</span>
+              </button>
+
+              <button
+                onClick={onLogout}
+                className="btn-material-iron p-2 rounded-lg text-stone-400 hover:text-red-300 transition cursor-pointer"
+                title="Đăng xuất quyền Quản trị"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onOpenLogin}
+              className="btn-material-wood px-3 py-1.5 rounded-lg text-xs font-bold text-amber-200 hover:text-amber-100 flex items-center gap-1.5 border border-[#5c4028] cursor-pointer"
+              title="Đăng nhập dành cho Quản trị viên tạo màn chơi"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Đăng Nhập Quản Trị</span>
+            </button>
+          )}
 
           <button
             onClick={onToggleMute}
-            className="btn-material-iron p-2.5 rounded-lg text-[#faebd7] hover:text-[#ffd700] transition cursor-pointer"
+            className="btn-material-iron p-2 rounded-lg text-[#faebd7] hover:text-[#ffd700] transition cursor-pointer"
             title={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'}
           >
-            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
         </div>
       </header>

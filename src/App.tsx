@@ -3,9 +3,11 @@ import { GameState, ChoiceOption, CharacterId, CampaignLevel } from './types/gam
 import { DEFAULT_BACH_DANG_CAMPAIGN } from './data/defaultCampaigns';
 import { levelStorage } from './utils/levelStorage';
 import { soundEngine } from './utils/soundEngine';
+import { authService } from './utils/auth';
 import { LandingScreen } from './components/LandingScreen';
 import { LevelSelectScreen } from './components/LevelSelectScreen';
 import { AdminStudio } from './components/admin/AdminStudio';
+import { LoginModal } from './components/admin/LoginModal';
 import { GameHUD } from './components/GameHUD';
 import { DialogueBox } from './components/DialogueBox';
 import { CharacterSpriteDisplay } from './components/CharacterSpriteDisplay';
@@ -19,6 +21,8 @@ const STORAGE_KEY_ENDINGS = 'history_game_unlocked_endings';
 
 export function App() {
   const [currentCampaign, setCurrentCampaign] = useState<CampaignLevel>(DEFAULT_BACH_DANG_CAMPAIGN);
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => authService.isAdminLoggedIn());
+  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
 
   const [gameState, setGameState] = useState<GameState>(() => {
     let savedEndings: string[] = [];
@@ -109,6 +113,20 @@ export function App() {
   const handleToggleStudyMode = useCallback(() => {
     setGameState((prev) => ({ ...prev, studyMode: !prev.studyMode }));
   }, []);
+
+  // Login Handlers
+  const handleLoginSuccess = () => {
+    setIsAdmin(true);
+    setGameState((prev) => ({ ...prev, gamePhase: 'admin' }));
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    setIsAdmin(false);
+    if (gameState.gamePhase === 'admin') {
+      setGameState((prev) => ({ ...prev, gamePhase: 'level_select' }));
+    }
+  };
 
   // Start game from landing screen (plays default campaign or currently set campaign)
   const handleStartGame = (playerName: string, _hero: CharacterId) => {
@@ -211,7 +229,6 @@ export function App() {
           };
         });
       } else if (currentScene.nextSceneId && currentCampaign.scenes[currentScene.nextSceneId]) {
-        // Linear transition
         const nextId = currentScene.nextSceneId;
         setGameState((prev) => ({
           ...prev,
@@ -257,7 +274,7 @@ export function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState.gamePhase !== 'playing') return;
-      if (isCodexOpen || isHistoryOpen || isFlowchartOpen || showChoices) return;
+      if (isCodexOpen || isHistoryOpen || isFlowchartOpen || showChoices || isLoginOpen) return;
 
       if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
@@ -267,42 +284,79 @@ export function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState.gamePhase, isCodexOpen, isHistoryOpen, isFlowchartOpen, showChoices, handleNextDialogue]);
+  }, [gameState.gamePhase, isCodexOpen, isHistoryOpen, isFlowchartOpen, showChoices, isLoginOpen, handleNextDialogue]);
 
   // --- SCREEN RENDERING ---
 
   // 1. Landing Screen
   if (gameState.gamePhase === 'landing') {
     return (
-      <LandingScreen
-        onStartGame={handleStartGame}
-        onOpenLevelSelect={() => setGameState((prev) => ({ ...prev, gamePhase: 'level_select' }))}
-        onOpenAdmin={() => setGameState((prev) => ({ ...prev, gamePhase: 'admin' }))}
-        isMuted={gameState.isMuted}
-        onToggleMute={handleToggleMute}
-      />
+      <>
+        <LandingScreen
+          onStartGame={handleStartGame}
+          onOpenLevelSelect={() => setGameState((prev) => ({ ...prev, gamePhase: 'level_select' }))}
+          onOpenAdmin={() => setGameState((prev) => ({ ...prev, gamePhase: 'admin' }))}
+          onOpenLogin={() => setIsLoginOpen(true)}
+          onLogout={handleLogout}
+          isAdmin={isAdmin}
+          isMuted={gameState.isMuted}
+          onToggleMute={handleToggleMute}
+        />
+        <LoginModal
+          isOpen={isLoginOpen}
+          onClose={() => setIsLoginOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      </>
     );
   }
 
   // 2. Level Select Screen
   if (gameState.gamePhase === 'level_select') {
     return (
-      <LevelSelectScreen
-        playerName={gameState.playerName}
-        onSelectLevel={handleSelectLevelAndPlay}
-        onOpenAdmin={() => setGameState((prev) => ({ ...prev, gamePhase: 'admin' }))}
-        onBackToLanding={() => setGameState((prev) => ({ ...prev, gamePhase: 'landing' }))}
-        unlockedEndings={gameState.unlockedEndings}
-      />
+      <>
+        <LevelSelectScreen
+          playerName={gameState.playerName}
+          onSelectLevel={handleSelectLevelAndPlay}
+          onOpenAdmin={() => setGameState((prev) => ({ ...prev, gamePhase: 'admin' }))}
+          onOpenLogin={() => setIsLoginOpen(true)}
+          onLogout={handleLogout}
+          onBackToLanding={() => setGameState((prev) => ({ ...prev, gamePhase: 'landing' }))}
+          isAdmin={isAdmin}
+          unlockedEndings={gameState.unlockedEndings}
+        />
+        <LoginModal
+          isOpen={isLoginOpen}
+          onClose={() => setIsLoginOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      </>
     );
   }
 
-  // 3. Admin Studio
+  // 3. Admin Studio (Requires Admin Auth)
   if (gameState.gamePhase === 'admin') {
+    if (!isAdmin) {
+      // Auto redirect unauthenticated users to Level Select
+      return (
+        <LevelSelectScreen
+          playerName={gameState.playerName}
+          onSelectLevel={handleSelectLevelAndPlay}
+          onOpenAdmin={() => setGameState((prev) => ({ ...prev, gamePhase: 'admin' }))}
+          onOpenLogin={() => setIsLoginOpen(true)}
+          onLogout={handleLogout}
+          onBackToLanding={() => setGameState((prev) => ({ ...prev, gamePhase: 'landing' }))}
+          isAdmin={isAdmin}
+          unlockedEndings={gameState.unlockedEndings}
+        />
+      );
+    }
+
     return (
       <AdminStudio
         onBackToMenu={() => setGameState((prev) => ({ ...prev, gamePhase: 'level_select' }))}
         onPlayLevel={handleSelectLevelAndPlay}
+        onLogout={handleLogout}
       />
     );
   }
@@ -407,9 +461,15 @@ export function App() {
         onJumpToScene={handleJumpToScene}
         scenes={currentCampaign.scenes}
       />
+
+      {/* Global Login Modal */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }
 
 export default App;
-
