@@ -8,19 +8,29 @@ import {
   Film,
   Sparkles,
   BookOpen,
-  HelpCircle,
   Award,
   ArrowUp,
   ArrowDown,
   Volume2,
-  Waves,
   Clock,
   Play,
   Copy,
   GitBranch,
   Layers,
+  MapPin,
+  Mountain,
+  Compass,
+  Shield,
 } from 'lucide-react';
-import { CampaignLevel, CharacterInfo, SceneData, DialogueItem, ChoiceOption } from '../../types/game';
+import {
+  CampaignLevel,
+  CharacterInfo,
+  SceneData,
+  DialogueItem,
+  ChoiceOption,
+  TerrainType,
+  TacticalCondition,
+} from '../../types/game';
 import { AssetUploader } from './AssetUploader';
 
 interface LevelEditorModalProps {
@@ -31,7 +41,7 @@ interface LevelEditorModalProps {
   onPlaytest: (level: CampaignLevel) => void;
 }
 
-type TabType = 'general' | 'characters' | 'scenes' | 'choices' | 'endings' | 'map';
+type TabType = 'scenes' | 'choices' | 'endings' | 'characters' | 'general' | 'map';
 
 const BACKGROUND_PRESETS = [
   { label: 'Trướng Nghị Kế', value: '/assets/images/scenes/war_tent.jpg' },
@@ -49,9 +59,9 @@ const SFX_PRESETS = [
   { label: 'Cung tên bắn (Arrow)', value: 'arrow' },
   { label: 'Sóng biển cuộn trào (Waves)', value: 'waves' },
   { label: 'Gió bão gầm rú (Wind)', value: 'wind' },
-  { label: 'Cọc gỗ đâm vỡ tàu (Crack)', value: 'wooden_crack' },
+  { label: 'Cọc gỗ đâm vỡ tàu (Wooden Crack)', value: 'wooden_crack' },
   { label: 'Cồng lệnh (Gong)', value: 'gong' },
-  { label: 'Tướng sĩ xuất kích (Cry)', value: 'battle_cry' },
+  { label: 'Tướng sĩ xuất kích (Battle Cry)', value: 'battle_cry' },
   { label: 'Khải hoàn ca (Victory)', value: 'victory' },
 ];
 
@@ -59,6 +69,141 @@ const BGM_PRESETS = [
   { label: 'Đại chiến sử thi (Epic War)', value: 'epic_war' },
   { label: 'Căng thẳng phục kích (Suspense)', value: 'suspense' },
   { label: 'Trầm tư nghị kế (Calm)', value: 'calm' },
+];
+
+const AMBIANCE_PRESETS = [
+  { label: 'Không âm thanh nền (None)', value: '' },
+  { label: '🌊 Sóng biển dào dạt (Waves)', value: 'waves' },
+  { label: '💨 Gió núi gầm rú (Wind)', value: 'wind' },
+  { label: '🔥 Lửa trại bập bùng (Fire)', value: 'fire' },
+  { label: '🦗 Côn trùng đêm thanh vắng (Night Insects)', value: 'night_insects' },
+  { label: '🌧️ Mưa bão lạnh buốt (Rain)', value: 'rain' },
+  { label: '⛺ Doanh trại quân cơ (Army Camp)', value: 'army_camp' },
+];
+
+interface BattlefieldArchetype {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  location: string;
+  terrainType: TerrainType;
+  tacticalCondition: TacticalCondition;
+  timeOfDay: string;
+  weatherAmbiance: string;
+  ambianceSound: string;
+  bgm: string;
+}
+
+const BATTLEFIELD_ARCHETYPES: BattlefieldArchetype[] = [
+  {
+    id: 'naval',
+    name: 'Thủy Chiến Sông Biển',
+    icon: '🌊',
+    description: 'Bạch Đằng, Rạch Gầm - Xoài Mút, Vân Đồn, Hàm Tử, Thị Nại',
+    location: 'Cửa Biển Bạch Đằng Giang',
+    terrainType: 'river_sea',
+    tacticalCondition: {
+      label: 'Thủy Triều',
+      value: 'Triều rút gấp lộ bãi cọc nhọn',
+      icon: '🌊',
+      colorStyle: 'bronze',
+    },
+    timeOfDay: 'Bình minh triều rút',
+    weatherAmbiance: 'Sương mù bảng lảng • Sóng cuộn dồn dập',
+    ambianceSound: 'waves',
+    bgm: 'epic_war',
+  },
+  {
+    id: 'mountain_pass',
+    name: 'Ải Núi & Đầm Lầy',
+    icon: '⛰️',
+    description: 'Ải Chi Lăng, Đèo Tam Điệp, Đèo Ba Dội, Đèo Ngang',
+    location: 'Ải Chi Lăng - Đầm Lầy Mã Yên',
+    terrainType: 'mountain_pass',
+    tacticalCondition: {
+      label: 'Địa Thế',
+      value: 'Đầm lầy bùn lún vây hãm kỵ binh',
+      icon: '⛰️',
+      colorStyle: 'wood',
+    },
+    timeOfDay: 'Trưa nắng gắt',
+    weatherAmbiance: 'Gió núi gầm rú • Bùn lầy lún sâu',
+    ambianceSound: 'wind',
+    bgm: 'suspense',
+  },
+  {
+    id: 'citadel_fort',
+    name: 'Thành Trì & Chiến Lũy',
+    icon: '🏰',
+    description: 'Sông Như Nguyệt, Thành Đông Quan, Thành Hà Nội, Thành Cổ Loa',
+    location: 'Chiến Lũy Nam Sông Như Nguyệt',
+    terrainType: 'citadel_fort',
+    tacticalCondition: {
+      label: 'Chiến Lũy',
+      value: 'Phòng tuyến cọc tre giáp hào sâu kiên cố',
+      icon: '🏰',
+      colorStyle: 'iron',
+    },
+    timeOfDay: 'Canh ba nửa đêm',
+    weatherAmbiance: 'Đêm tối tĩnh mịch • Ngọn đuốc bập bùng',
+    ambianceSound: 'army_camp',
+    bgm: 'calm',
+  },
+  {
+    id: 'plains_fire',
+    name: 'Bình Nguyên & Hỏa Công',
+    icon: '🔥',
+    description: 'Đồn Ngọc Hồi - Đống Đa, Chúc Động, Tốt Động',
+    location: 'Đồn Ngọc Hồi - Gò Đống Đa',
+    terrainType: 'plains',
+    tacticalCondition: {
+      label: 'Khí Quyển',
+      value: 'Hỏa hổ & Rơm tẩm dầu mù mịt giặc loạn',
+      icon: '🔥',
+      colorStyle: 'danger',
+    },
+    timeOfDay: 'Mờ sáng mùng 5 Tết',
+    weatherAmbiance: 'Khói lửa ngút trời • Tiếng súng pháo rền vang',
+    ambianceSound: 'fire',
+    bgm: 'epic_war',
+  },
+  {
+    id: 'dense_forest',
+    name: 'Rừng Rậm Mai Phục',
+    icon: '🌲',
+    description: 'Rừng sâu Lam Sơn, Chiến khu Ba Bể, Yên Thế, Rừng Sác',
+    location: 'Rừng Sâu Lam Sơn',
+    terrainType: 'dense_forest',
+    tacticalCondition: {
+      label: 'Phục Binh',
+      value: 'Rừng rậm che giấu vạn quân mai phục',
+      icon: '🌲',
+      colorStyle: 'nature',
+    },
+    timeOfDay: 'Đêm khuya thanh vắng',
+    weatherAmbiance: 'Đêm đen mịt mùng • Côn trùng rỉ rả',
+    ambianceSound: 'night_insects',
+    bgm: 'suspense',
+  },
+  {
+    id: 'swamp_reeds',
+    name: 'Đầm Lầy Lau Sậy',
+    icon: '🌾',
+    description: 'Đầm Dạ Trạch (Triệu Quang Phục), Đồng Tháp Mười, U Minh',
+    location: 'Đầm Dạ Trạch - Bãi Màn Lau Sậy',
+    terrainType: 'swamp',
+    tacticalCondition: {
+      label: 'Ẩn Nấp',
+      value: 'Lau sậy rậm rạp xuất quỷ nhập thần',
+      icon: '🌾',
+      colorStyle: 'wood',
+    },
+    timeOfDay: 'Đêm tối mù sương',
+    weatherAmbiance: 'Sương đêm ẩm ướt • Nước bùn mênh mông',
+    ambianceSound: 'night_insects',
+    bgm: 'suspense',
+  },
 ];
 
 export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
@@ -134,14 +279,21 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
       title: titleName || `Hồi ${sceneIndex}: Diễn Biến Mới`,
       chapter: `Chương ${sceneIndex}`,
       branchTag: 'Chiến Lược',
-      background: 'war_tent',
+      location: 'Chiến Trường Sa Bàn',
+      terrainType: 'custom',
       timeOfDay: 'Đêm khuya',
-      tideState: 'neutral',
+      tacticalCondition: {
+        label: 'Trận Thế',
+        value: 'Hai quân đối lũy',
+        icon: '⚔️',
+        colorStyle: 'bronze',
+      },
+      background: 'war_tent',
       dialogues: [
         {
           id: `d_${Date.now()}`,
           speaker: Object.keys(formData.characters)[0] || 'narrator',
-          text: 'Nhập nội dung câu thoại đầu tiên của phân cảnh này...',
+          text: 'Nhập nội dung câu thoại hoặc diễn biến đầu tiên của phân cảnh này...',
           emotion: 'normal',
         },
       ],
@@ -179,6 +331,16 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         [selectedSceneId]: { ...prev.scenes[selectedSceneId], [key]: value },
       },
     }));
+  };
+
+  const handleApplyArchetype = (arch: BattlefieldArchetype) => {
+    if (!selectedSceneId || !currentScene) return;
+    handleUpdateScene('location', arch.location);
+    handleUpdateScene('terrainType', arch.terrainType);
+    handleUpdateScene('tacticalCondition', arch.tacticalCondition);
+    handleUpdateScene('timeOfDay', arch.timeOfDay);
+    handleUpdateScene('weatherAmbiance', arch.weatherAmbiance);
+    handleUpdateScene('ambianceSound', arch.ambianceSound);
   };
 
   const handleDeleteScene = (sceneId: string) => {
@@ -350,8 +512,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   : 'text-stone-400 hover:text-stone-200 hover:bg-[#241810]'
               }`}
             >
-              <Film className="w-3.5 h-3.5 text-amber-400" />
-              <span>1. Phân Cảnh & Lời Thoại ({Object.keys(formData.scenes).length})</span>
+              <Film className="w-3.5 h-3.5" />
+              <span>1. Phân Cảnh & Mạch Truyện</span>
             </button>
 
             <button
@@ -362,7 +524,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   : 'text-stone-400 hover:text-stone-200 hover:bg-[#241810]'
               }`}
             >
-              <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
+              <GitBranch className="w-3.5 h-3.5" />
               <span>2. Quyết Sách Rẽ Nhánh</span>
             </button>
 
@@ -374,7 +536,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   : 'text-stone-400 hover:text-stone-200 hover:bg-[#241810]'
               }`}
             >
-              <Award className="w-3.5 h-3.5 text-amber-400" />
+              <Award className="w-3.5 h-3.5" />
               <span>3. Kết Cục & Xếp Hạng</span>
             </button>
 
@@ -386,7 +548,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   : 'text-stone-400 hover:text-stone-200 hover:bg-[#241810]'
               }`}
             >
-              <Users className="w-3.5 h-3.5 text-amber-400" />
+              <Users className="w-3.5 h-3.5" />
               <span>4. Tướng Lĩnh ({Object.keys(formData.characters).length})</span>
             </button>
 
@@ -398,8 +560,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   : 'text-stone-400 hover:text-stone-200 hover:bg-[#241810]'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-              <span>5. Bối Cảnh Chung</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>5. Bối Cảnh Chiến Dịch</span>
             </button>
 
             <button
@@ -410,23 +572,27 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   : 'text-stone-400 hover:text-stone-200 hover:bg-[#241810]'
               }`}
             >
-              <GitBranch className="w-3.5 h-3.5 text-amber-400" />
-              <span>6. Sa Bàn Sơ Đồ</span>
+              <Compass className="w-3.5 h-3.5" />
+              <span>6. Sa Bàn Sơ Đồ Cây Truyện</span>
             </button>
           </div>
 
-          <span className="text-[11px] text-stone-400 hidden md:block">
-            Mọi hình ảnh & audio được tải lên Cloudinary CDN tốc độ cao
+          <span className="text-[11px] text-stone-400 hidden lg:inline">
+            Tổng cộng: <strong className="text-amber-300">{Object.keys(formData.scenes).length}</strong> cảnh •{' '}
+            <strong className="text-emerald-300">
+              {Object.values(formData.scenes).filter((s) => s.isEnding).length}
+            </strong>{' '}
+            kết cục
           </span>
         </div>
 
         {/* Tab Content Container */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0c0805]">
-          {/* TAB 1: PHÂN CẢNH & LỜI THOẠI (CORE WORKFLOW) */}
+          {/* TAB 1: PHÂN CẢNH & MẠCH TRUYỆN (CORE WORKFLOW) */}
           {activeTab === 'scenes' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-5 max-w-7xl mx-auto">
               {/* Scene List Sidebar (4 cols) */}
-              <div className="md:col-span-4 card-solid-dark p-3 rounded-xl border border-[#4a3525] space-y-3 flex flex-col max-h-[75vh]">
+              <div className="md:col-span-4 card-solid-dark p-3 rounded-xl border border-[#4a3525] space-y-3 flex flex-col max-h-[78vh]">
                 <div className="flex items-center justify-between pb-2 border-b border-[#3d2a1c]">
                   <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-amber-400" />
@@ -468,13 +634,15 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           )}
                           {s.isEnding && (
                             <span className="text-[9px] px-1.5 py-0.2 bg-emerald-950 text-emerald-200 rounded border border-emerald-600 font-bold">
-                              END
+                              END ({s.endingRank || 'S'})
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-center justify-between text-[10px] text-stone-400">
-                          <span>{s.chapter}</span>
+                          <span className="truncate max-w-[140px]">
+                            {s.location ? `📍 ${s.location}` : s.chapter}
+                          </span>
                           <span>{s.dialogues.length} thoại • {s.choices?.length || 0} nhánh</span>
                         </div>
                       </div>
@@ -486,12 +654,12 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               {/* Scene Detail & Dialogues Editor (8 cols) */}
               {currentScene ? (
                 <div className="md:col-span-8 card-solid-dark p-4 sm:p-5 rounded-xl border border-[#4a3525] space-y-5">
-                  {/* Scene Settings Header */}
-                  <div className="bg-[#160f0a] p-3.5 rounded-lg border border-[#3d2a1c] space-y-3">
-                    <div className="flex items-center justify-between">
+                  {/* Scene Settings Header & Battlefield Archetypes */}
+                  <div className="bg-[#160f0a] p-3.5 rounded-lg border border-[#3d2a1c] space-y-3.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                         <Film className="w-3.5 h-3.5 text-amber-400" />
-                        Thiết Lập Phân Cảnh ({currentScene.id})
+                        Sa Bàn & Bối Cảnh Phân Cảnh ({currentScene.id})
                       </span>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -517,6 +685,31 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       </div>
                     </div>
 
+                    {/* Quick Battlefield Archetype Presets Bar */}
+                    <div className="bg-[#100b07] p-2.5 rounded-lg border border-[#3d2a1c] space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] text-amber-300 font-bold">
+                        <span className="flex items-center gap-1">
+                          <Compass className="w-3.5 h-3.5 text-amber-400" />
+                          Mẫu Chiến Trường Nhanh (Click để tự động điền bối cảnh mẫu):
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {BATTLEFIELD_ARCHETYPES.map((arch) => (
+                          <button
+                            key={arch.id}
+                            type="button"
+                            onClick={() => handleApplyArchetype(arch)}
+                            className="text-[10px] px-2 py-1 rounded bg-[#1e150f] hover:bg-amber-900 text-stone-300 hover:text-amber-100 border border-[#4a3525] flex items-center gap-1 cursor-pointer transition-colors"
+                            title={arch.description}
+                          >
+                            <span>{arch.icon}</span>
+                            <span>{arch.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Title, Chapter, Branch Tag */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="sm:col-span-2">
                         <label className="text-[11px] text-stone-300 font-medium block mb-1">Tiêu Đề Cảnh</label>
@@ -524,6 +717,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           type="text"
                           value={currentScene.title}
                           onChange={(e) => handleUpdateScene('title', e.target.value)}
+                          placeholder="Ví dụ: Hồi 2: Sấm Dậy Bạch Đằng"
                           className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525] font-bold focus:outline-none focus:border-amber-500"
                         />
                       </div>
@@ -534,12 +728,49 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           type="text"
                           value={currentScene.chapter}
                           onChange={(e) => handleUpdateScene('chapter', e.target.value)}
+                          placeholder="Ví dụ: Chương I: Quyết Sách"
                           className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525] focus:outline-none focus:border-amber-500"
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Location, Terrain Type, Time & Weather Ambiance */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div>
+                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-amber-400" />
+                          Địa Điểm Chiến Trường
+                        </label>
+                        <input
+                          type="text"
+                          value={currentScene.location || ''}
+                          onChange={(e) => handleUpdateScene('location', e.target.value)}
+                          placeholder="Ví dụ: Cửa Biển Bạch Đằng / Ải Chi Lăng..."
+                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
+                          <Mountain className="w-3 h-3 text-amber-400" />
+                          Loại Địa Hình
+                        </label>
+                        <select
+                          value={currentScene.terrainType || 'custom'}
+                          onChange={(e) => handleUpdateScene('terrainType', e.target.value as TerrainType)}
+                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
+                        >
+                          <option value="river_sea">🌊 Thủy chiến sông biển</option>
+                          <option value="mountain_pass">⛰️ Đèo ải núi hiểm trở</option>
+                          <option value="dense_forest">🌲 Rừng rậm mai phục</option>
+                          <option value="citadel_fort">🏰 Thành trì chiến lũy</option>
+                          <option value="plains">🌾 Bình nguyên khoáng đạt</option>
+                          <option value="swamp">🌿 Đầm lầy lau sậy</option>
+                          <option value="encampment">⛺ Doanh trại quân cơ</option>
+                          <option value="custom">🛠️ Tùy biến tự do</option>
+                        </select>
+                      </div>
+
                       <div>
                         <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
                           <Clock className="w-3 h-3 text-amber-400" />
@@ -550,30 +781,138 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           value={currentScene.timeOfDay}
                           onChange={(e) => handleUpdateScene('timeOfDay', e.target.value)}
                           placeholder="Đêm khuya / Bình minh..."
-                          className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525]"
+                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
                         />
                       </div>
 
                       <div>
                         <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
-                          <Waves className="w-3 h-3 text-amber-400" />
-                          Mực Nước Thủy Triều
+                          <Sparkles className="w-3 h-3 text-amber-400" />
+                          Khí Quyển / Thời Tiết
+                        </label>
+                        <input
+                          type="text"
+                          value={currentScene.weatherAmbiance || ''}
+                          onChange={(e) => handleUpdateScene('weatherAmbiance', e.target.value)}
+                          placeholder="Sương mù / Gió bão / Khói lửa..."
+                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Dynamic Tactical Condition Setup (Universal on Game HUD) */}
+                    <div className="bg-[#100b07] p-3 rounded-lg border border-[#3d2a1c] space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-amber-300 font-bold flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 text-amber-400" />
+                          Yếu Tố Chiến Thuật Năng Động (Hiển thị trực tiếp trên thanh Game HUD):
+                        </label>
+                        <span className="text-[10px] text-stone-400">
+                          Tùy biến nhãn & trạng thái cho mọi loại trận chiến
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                        <div>
+                          <label className="text-[10px] text-stone-400 block mb-1">Biểu tượng Icon:</label>
+                          <input
+                            type="text"
+                            value={currentScene.tacticalCondition?.icon || '⚔️'}
+                            onChange={(e) =>
+                              handleUpdateScene('tacticalCondition', {
+                                label: currentScene.tacticalCondition?.label || 'Trận Thế',
+                                value: currentScene.tacticalCondition?.value || '',
+                                colorStyle: currentScene.tacticalCondition?.colorStyle || 'bronze',
+                                icon: e.target.value,
+                              })
+                            }
+                            placeholder="🌊, ⛰️, 🔥, 🏰, 🌲..."
+                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525] text-center"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-stone-400 block mb-1">Tên yếu tố (Label):</label>
+                          <input
+                            type="text"
+                            value={currentScene.tacticalCondition?.label || ''}
+                            onChange={(e) =>
+                              handleUpdateScene('tacticalCondition', {
+                                icon: currentScene.tacticalCondition?.icon || '⚔️',
+                                value: currentScene.tacticalCondition?.value || '',
+                                colorStyle: currentScene.tacticalCondition?.colorStyle || 'bronze',
+                                label: e.target.value,
+                              })
+                            }
+                            placeholder="Thủy triều / Địa thế / Khí quyển..."
+                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-stone-400 block mb-1">Trạng thái (Value):</label>
+                          <input
+                            type="text"
+                            value={currentScene.tacticalCondition?.value || ''}
+                            onChange={(e) =>
+                              handleUpdateScene('tacticalCondition', {
+                                icon: currentScene.tacticalCondition?.icon || '⚔️',
+                                label: currentScene.tacticalCondition?.label || 'Trận Thế',
+                                colorStyle: currentScene.tacticalCondition?.colorStyle || 'bronze',
+                                value: e.target.value,
+                              })
+                            }
+                            placeholder="Triều rút gấp / Đầm lầy lún sâu..."
+                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-stone-400 block mb-1">Màu sắc hiển thị:</label>
+                          <select
+                            value={currentScene.tacticalCondition?.colorStyle || 'bronze'}
+                            onChange={(e) =>
+                              handleUpdateScene('tacticalCondition', {
+                                icon: currentScene.tacticalCondition?.icon || '⚔️',
+                                label: currentScene.tacticalCondition?.label || 'Trận Thế',
+                                value: currentScene.tacticalCondition?.value || '',
+                                colorStyle: e.target.value as any,
+                              })
+                            }
+                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525]"
+                          >
+                            <option value="bronze">Đồng thau (Bronze)</option>
+                            <option value="wood">Gỗ lim (Wood)</option>
+                            <option value="iron">Sắt thép (Iron)</option>
+                            <option value="danger">Báo động đỏ (Danger)</option>
+                            <option value="nature">Rừng rậm xanh (Nature)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Audio Ambiance & Background Image Uploader */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
+                          <Volume2 className="w-3 h-3 text-amber-400" />
+                          Âm Thanh Môi Trường Nền (Loop Ambiance)
                         </label>
                         <select
-                          value={currentScene.tideState || 'neutral'}
-                          onChange={(e) => handleUpdateScene('tideState', e.target.value as any)}
+                          value={currentScene.ambianceSound || ''}
+                          onChange={(e) => handleUpdateScene('ambianceSound', e.target.value)}
                           className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525]"
                         >
-                          <option value="neutral">Nước Đứng (Bình Hoà)</option>
-                          <option value="high">Triều Cường (Nước Ngập Cọc)</option>
-                          <option value="falling">Triều Rút Gấp (Cọc Nhô Lên)</option>
-                          <option value="low">Triều Kiệt (Lộ Đáy Sông)</option>
-                          <option value="rising">Triều Dâng</option>
+                          {AMBIANCE_PRESETS.map((amb) => (
+                            <option key={amb.value} value={amb.value}>
+                              {amb.label}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1">Cảnh Khởi Đầu Game?</label>
+                        <label className="text-[11px] text-stone-300 font-medium block mb-1">Cảnh Khởi Đầu Màn?</label>
                         <button
                           type="button"
                           onClick={() => updateField('initialSceneId', currentScene.id)}
@@ -590,7 +929,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
 
                     {/* Scene Background Uploader */}
                     <AssetUploader
-                      label="Hình Nền Phân Cảnh (Background Scene)"
+                      label="Hình Nền Phân Cảnh (Background Scene - Cloudinary)"
                       acceptType="image"
                       value={currentScene.customBackgroundUrl || currentScene.background}
                       onChange={(val) => {
@@ -598,16 +937,16 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                         handleUpdateScene('background', val);
                       }}
                       presetOptions={BACKGROUND_PRESETS}
-                      placeholder="Tải ảnh lên Cloudinary hoặc chọn ảnh mẫu..."
+                      placeholder="Tải hình nền chiến trường lên Cloudinary..."
                     />
                   </div>
 
-                  {/* Storyboard Dialogue Timeline */}
+                  {/* Dialogues Storyboard Stream */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-[#3d2a1c]">
                       <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                        <Volume2 className="w-3.5 h-3.5 text-amber-400" />
-                        Dòng Chảy Lời Thoại ({currentScene.dialogues.length} câu)
+                        <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                        Dòng Diễn Biến & Cuộc Hội Thoại ({currentScene.dialogues.length} lượt)
                       </span>
                       <button
                         type="button"
@@ -619,16 +958,18 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       </button>
                     </div>
 
-                    <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                    {/* Dialogue Items List */}
+                    <div className="space-y-3">
                       {currentScene.dialogues.map((diag, dIdx) => {
-                        const speakerChar = formData.characters[diag.speaker] || formData.characters.narrator;
+                        const isNarrator = diag.speaker === 'narrator';
+                        const speakerChar = formData.characters[diag.speaker];
 
                         return (
                           <div
                             key={diag.id || dIdx}
-                            className="bg-[#140e0a] p-3.5 rounded-xl border border-[#3d2a1c] space-y-3 transition-all hover:border-amber-700/80 group"
+                            className="p-3.5 rounded-xl bg-[#140e0a] border border-[#3d2a1c] space-y-3 hover:border-amber-700/80 transition-colors"
                           >
-                            {/* Dialogue Header */}
+                            {/* Dialogue Item Top Bar */}
                             <div className="flex items-center justify-between gap-2 flex-wrap">
                               <div className="flex items-center gap-2">
                                 <span className="w-6 h-6 rounded-full bg-amber-950 text-amber-300 text-xs font-bold flex items-center justify-center border border-amber-700">
@@ -636,49 +977,58 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                                 </span>
 
                                 {/* Speaker Selector with Avatar */}
-                                <div className="flex items-center gap-1.5 bg-[#1c130d] px-2 py-1 rounded border border-[#4a3525]">
-                                  {speakerChar?.avatar && (
+                                <div className="flex items-center gap-2 bg-[#1b140e] px-2.5 py-1 rounded-lg border border-[#4a3525]">
+                                  {speakerChar?.avatar ? (
                                     <img
                                       src={speakerChar.avatar}
-                                      alt={speakerChar.name}
-                                      className="w-5 h-5 rounded object-cover border border-[#5c4028]"
+                                      alt="avatar"
+                                      className="w-5 h-5 rounded-full object-cover border border-amber-600"
                                     />
+                                  ) : (
+                                    <span className="text-xs">📜</span>
                                   )}
                                   <select
                                     value={diag.speaker}
                                     onChange={(e) => handleUpdateDialogue(dIdx, { speaker: e.target.value })}
                                     className="bg-transparent text-amber-200 text-xs font-bold focus:outline-none cursor-pointer"
                                   >
+                                    <option value="narrator" className="bg-[#1b140e]">
+                                      📜 Người Dẫn Chuyện / Sử Ký
+                                    </option>
                                     {Object.values(formData.characters).map((c) => (
-                                      <option key={c.id} value={c.id} className="bg-[#1c130d] text-stone-200">
-                                        {c.name} ({c.title || c.faction})
+                                      <option key={c.id} value={c.id} className="bg-[#1b140e]">
+                                        👤 {c.name} ({c.title})
                                       </option>
                                     ))}
                                   </select>
                                 </div>
 
                                 {/* Emotion Selector */}
-                                <select
-                                  value={diag.emotion || 'normal'}
-                                  onChange={(e) => handleUpdateDialogue(dIdx, { emotion: e.target.value as any })}
-                                  className="bg-[#1c130d] text-stone-300 text-xs px-2 py-1 rounded border border-[#4a3525]"
-                                >
-                                  <option value="normal">Nét mặt: Bình thường</option>
-                                  <option value="confident">Nét mặt: Tự tin / Hào hùng</option>
-                                  <option value="intense">Nét mặt: Kịch tính / Khẩn trương</option>
-                                  <option value="angry">Nét mặt: Uy nghiêm / Phẫn nộ</option>
-                                  <option value="triumphant">Nét mặt: Khải hoàn / Thắng lợi</option>
-                                </select>
+                                {!isNarrator && (
+                                  <select
+                                    value={diag.emotion || 'normal'}
+                                    onChange={(e) =>
+                                      handleUpdateDialogue(dIdx, { emotion: e.target.value as any })
+                                    }
+                                    className="bg-[#1b140e] text-stone-300 text-xs px-2 py-1 rounded border border-[#4a3525]"
+                                  >
+                                    <option value="normal">Điềm tĩnh</option>
+                                    <option value="intense">Kịch tính / Khẩn cấp</option>
+                                    <option value="confident">Tự tin / Quyết đoán</option>
+                                    <option value="angry">Phẫn nộ / Uy nghiêm</option>
+                                    <option value="triumphant">Khải hoàn / Đắc thắng</option>
+                                  </select>
+                                )}
                               </div>
 
-                              {/* Dialogue Action Toolbar */}
+                              {/* Action controls: Move Up, Move Down, Duplicate, Delete */}
                               <div className="flex items-center gap-1">
                                 <button
                                   type="button"
                                   disabled={dIdx === 0}
                                   onClick={() => handleMoveDialogue(dIdx, 'up')}
-                                  className="p-1 text-stone-400 hover:text-stone-100 disabled:opacity-20 cursor-pointer"
-                                  title="Di chuyển lên trước"
+                                  className="p-1 rounded text-stone-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                                  title="Di chuyển lên"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
                                 </button>
@@ -686,24 +1036,24 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                                   type="button"
                                   disabled={dIdx === currentScene.dialogues.length - 1}
                                   onClick={() => handleMoveDialogue(dIdx, 'down')}
-                                  className="p-1 text-stone-400 hover:text-stone-100 disabled:opacity-20 cursor-pointer"
-                                  title="Di chuyển xuống sau"
+                                  className="p-1 rounded text-stone-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                                  title="Di chuyển xuống"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDuplicateDialogue(dIdx)}
-                                  className="p-1 text-stone-400 hover:text-sky-300 cursor-pointer"
-                                  title="Nhân bản câu thoại này"
+                                  className="p-1 rounded text-stone-400 hover:text-sky-300 cursor-pointer"
+                                  title="Nhân bản câu thoại"
                                 >
                                   <Copy className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteDialogue(dIdx)}
-                                  className="p-1 text-stone-400 hover:text-red-400 cursor-pointer"
-                                  title="Xóa câu thoại này"
+                                  className="p-1 rounded text-stone-400 hover:text-red-400 cursor-pointer"
+                                  title="Xóa câu thoại"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -715,7 +1065,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                               rows={2}
                               value={diag.text}
                               onChange={(e) => handleUpdateDialogue(dIdx, { text: e.target.value })}
-                              placeholder="Nhập nội dung lời thoại nhân vật..."
+                              placeholder="Nhập nội dung lời thoại nhân vật hoặc diễn biến kịch bản..."
                               className="w-full bg-[#0d0906] text-stone-100 text-xs px-3 py-2.5 rounded-lg border border-[#4a3525] focus:outline-none focus:border-amber-500 leading-relaxed"
                             />
 
@@ -725,29 +1075,33 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                                 <label className="text-stone-400 block mb-1 text-[11px]">Hiệu ứng Âm thanh (SFX):</label>
                                 <select
                                   value={diag.soundEffect || ''}
-                                  onChange={(e) => handleUpdateDialogue(dIdx, { soundEffect: e.target.value || undefined })}
+                                  onChange={(e) =>
+                                    handleUpdateDialogue(dIdx, { soundEffect: e.target.value || undefined })
+                                  }
                                   className="w-full bg-[#1b140e] text-stone-300 text-xs px-2.5 py-1.5 rounded border border-[#3d2a1c]"
                                 >
-                                  <option value="">(Không có SFX)</option>
-                                  {SFX_PRESETS.map((p) => (
-                                    <option key={p.value} value={p.value}>
-                                      {p.label}
+                                  <option value="">Không có SFX</option>
+                                  {SFX_PRESETS.map((s) => (
+                                    <option key={s.value} value={s.value}>
+                                      {s.label}
                                     </option>
                                   ))}
                                 </select>
                               </div>
 
                               <div>
-                                <label className="text-stone-400 block mb-1 text-[11px]">Nhạc nền (BGM):</label>
+                                <label className="text-stone-400 block mb-1 text-[11px]">Nhạc Nền Thay Đổi (BGM):</label>
                                 <select
                                   value={diag.bgm || ''}
-                                  onChange={(e) => handleUpdateDialogue(dIdx, { bgm: e.target.value || undefined })}
+                                  onChange={(e) =>
+                                    handleUpdateDialogue(dIdx, { bgm: e.target.value || undefined })
+                                  }
                                   className="w-full bg-[#1b140e] text-stone-300 text-xs px-2.5 py-1.5 rounded border border-[#3d2a1c]"
                                 >
-                                  <option value="">(Giữ nguyên BGM)</option>
-                                  {BGM_PRESETS.map((p) => (
-                                    <option key={p.value} value={p.value}>
-                                      {p.label}
+                                  <option value="">Giữ nguyên BGM</option>
+                                  {BGM_PRESETS.map((b) => (
+                                    <option key={b.value} value={b.value}>
+                                      {b.label}
                                     </option>
                                   ))}
                                 </select>
@@ -755,12 +1109,14 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
 
                               <div>
                                 <AssetUploader
-                                  label="Audio Giọng Đọc (MP3/WAV)"
+                                  label="Audio Giọng Đọc (Cloudinary)"
                                   acceptType="audio"
-                                  value={diag.customVoiceUrl || ''}
-                                  onChange={(val) => handleUpdateDialogue(dIdx, { customVoiceUrl: val || undefined })}
-                                  placeholder="Tải MP3 lên Cloudinary..."
                                   compact
+                                  value={diag.customVoiceUrl || ''}
+                                  onChange={(val) =>
+                                    handleUpdateDialogue(dIdx, { customVoiceUrl: val || undefined })
+                                  }
+                                  placeholder="Tải file âm thanh giọng đọc lên Cloudinary..."
                                 />
                               </div>
                             </div>
@@ -771,25 +1127,25 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="md:col-span-8 flex items-center justify-center p-12 text-stone-500">
-                  Vui lòng chọn hoặc tạo phân cảnh mới từ cột danh sách bên trái.
+                <div className="md:col-span-8 flex items-center justify-center p-12 text-stone-400">
+                  Vui lòng chọn một phân cảnh bên danh sách hoặc bấm "+ Thêm Cảnh".
                 </div>
               )}
             </div>
           )}
 
-          {/* TAB 2: QUYẾT SÁCH RẼ NHÁNH (CHOICES) */}
+          {/* TAB 2: QUYẾT SÁCH RẼ NHÁNH (CHOICES & BRANCHES) */}
           {activeTab === 'choices' && currentScene && (
             <div className="max-w-4xl mx-auto space-y-4">
               <div className="card-solid-dark p-5 rounded-xl border border-[#4a3525] space-y-4">
                 <div className="flex items-center justify-between border-b border-[#3d2a1c] pb-3">
                   <div>
                     <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-amber-400" />
-                      Quyết Sách Cho Cảnh: {currentScene.title}
+                      <GitBranch className="w-4 h-4 text-amber-400" />
+                      Quyết Sách Quân Sự Tại: {currentScene.title}
                     </h3>
                     <p className="text-xs text-stone-400 mt-0.5">
-                      Sau khi đọc hết lời thoại ở cảnh này, người chơi sẽ thấy các ngã rẽ chiến thuật dưới đây.
+                      Sau khi đọc hết thoại, người chơi sẽ chọn 1 trong các quyết sách dưới đây để rẽ nhánh cốt truyện.
                     </p>
                   </div>
                   <button
@@ -803,42 +1159,42 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                 </div>
 
                 {(!currentScene.choices || currentScene.choices.length === 0) && (
-                  <div className="text-center py-10 text-stone-400 space-y-2 bg-[#120c08] rounded-xl border border-[#3d2a1c]">
+                  <div className="text-center py-10 bg-[#140e0a] rounded-xl border border-[#3d2a1c] space-y-2">
                     <p className="text-xs font-bold text-amber-400">Chưa có lựa chọn nào cho phân cảnh này.</p>
-                    <p className="text-[11px] text-stone-500">
-                      Nếu cảnh này là Kết Cục (Ending), hãy chuyển sang Tab 3 để thiết lập xếp hạng chiến thắng.
+                    <p className="text-[11px] text-stone-400">
+                      Nếu không có lựa chọn, phân cảnh sẽ tự động kết thúc hoặc chuyển sang cảnh tiếp theo.
                     </p>
                   </div>
                 )}
 
                 <div className="space-y-4">
-                  {currentScene.choices?.map((choice, cIdx) => (
+                  {(currentScene.choices || []).map((choice, cIdx) => (
                     <div
                       key={choice.id || cIdx}
-                      className="bg-[#140e0a] p-4 rounded-xl border-2 border-[#4a3525] space-y-3 relative hover:border-amber-600 transition-colors"
+                      className="bg-[#160f0a] p-4 rounded-xl border border-[#4a3525] space-y-3 hover:border-amber-600 transition-colors"
                     >
-                      <div className="flex items-center justify-between gap-2 border-b border-[#3d2a1c] pb-2">
+                      <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
                           Quyết Sách #{cIdx + 1}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleDeleteChoice(cIdx)}
-                          className="text-stone-400 hover:text-red-400 p-1 transition-colors cursor-pointer"
-                          title="Xóa lựa chọn này"
+                          className="text-stone-400 hover:text-red-400 text-xs flex items-center gap-1 cursor-pointer"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Xóa lựa chọn</span>
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="sm:col-span-2">
                           <label className="text-xs text-stone-300 font-medium block mb-1">Tiêu Đề Lựa Chọn</label>
                           <input
                             type="text"
                             value={choice.text}
                             onChange={(e) => handleUpdateChoice(cIdx, { text: e.target.value })}
-                            placeholder="Ví dụ: Kế Sách Bãi Cọc Ngầm"
+                            placeholder="Ví dụ: Kế Sách Bãi Cọc Ngầm..."
                             className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#3d2a1c] font-bold"
                           />
                         </div>
@@ -849,19 +1205,19 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                             type="text"
                             value={choice.tag || ''}
                             onChange={(e) => handleUpdateChoice(cIdx, { tag: e.target.value })}
-                            placeholder="Ví dụ: 👑 CHÍNH SỬ (TỐI ƯU)"
-                            className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#3d2a1c]"
+                            placeholder="Ví dụ: 👑 CHÍNH SỬ..."
+                            className="w-full bg-[#100b07] text-amber-300 text-xs px-3 py-2 rounded border border-[#3d2a1c]"
                           />
                         </div>
                       </div>
 
                       <div>
                         <label className="text-xs text-stone-300 font-medium block mb-1">Mô Tả Kế Sách</label>
-                        <input
-                          type="text"
+                        <textarea
+                          rows={2}
                           value={choice.description || ''}
                           onChange={(e) => handleUpdateChoice(cIdx, { description: e.target.value })}
-                          placeholder="Mô tả ngắn gọn về hành động chiến thuật..."
+                          placeholder="Mô tả cụ thể hành động quân sự..."
                           className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#3d2a1c]"
                         />
                       </div>
@@ -869,7 +1225,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                           <label className="text-xs text-stone-300 font-medium block mb-1">
-                            Chuyển Tới Phân Cảnh (Next Scene)
+                            Chuyển Tới Cảnh Kế Tiếp (Next Scene)
                           </label>
                           <select
                             value={choice.nextSceneId}
@@ -1018,15 +1374,16 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                         rows={4}
                         value={currentScene.endingSummary || ''}
                         onChange={(e) => handleUpdateScene('endingSummary', e.target.value)}
-                        placeholder="Đánh giá chiến công oanh liệt, bài học quân sự ghi danh ngàn đời..."
+                        placeholder="Mô tả ý nghĩa lịch sử của kết cục này..."
                         className="w-full bg-[#150f0a] text-stone-100 text-xs px-3.5 py-2.5 rounded-lg border border-[#4a3525] leading-relaxed"
                       />
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-stone-500 text-xs">
-                    Phân cảnh này hiện đang là phân cảnh thông thường. Hãy tích chọn ô phía trên nếu đây là một trong các kết thúc của chiến dịch.
-                  </div>
+                  <p className="text-xs text-stone-400 py-4 text-center">
+                    Cảnh này hiện tại là một phân cảnh diễn biến bình thường. Hãy tích vào nút "Đây Là Cảnh Kết Cục" ở
+                    trên nếu bạn muốn biến cảnh này thành kết thúc của một nhánh truyện.
+                  </p>
                 )}
               </div>
             </div>
@@ -1034,8 +1391,9 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
 
           {/* TAB 4: TƯỚNG LĨNH & NHÂN VẬT (CHARACTERS) */}
           {activeTab === 'characters' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <div className="card-solid-dark p-3.5 rounded-xl border border-[#4a3525] space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 max-w-6xl mx-auto">
+              {/* Character List (4 cols) */}
+              <div className="md:col-span-4 card-solid-dark p-3 rounded-xl border border-[#4a3525] space-y-3 max-h-[75vh] flex flex-col">
                 <div className="flex items-center justify-between pb-2 border-b border-[#3d2a1c]">
                   <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-amber-400" />
@@ -1047,82 +1405,77 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                     className="btn-material-bronze text-[11px] px-2.5 py-1 rounded flex items-center gap-1 text-amber-100 font-bold cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Thêm Tướng</span>
+                    <span>+ Thêm Tướng</span>
                   </button>
                 </div>
 
-                <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+                <div className="space-y-2 overflow-y-auto pr-1 flex-1">
                   {Object.values(formData.characters).map((c) => {
                     const isSelected = selectedCharId === c.id;
-
                     return (
                       <div
                         key={c.id}
                         onClick={() => setSelectedCharId(c.id)}
-                        className={`p-2 rounded-lg border-2 cursor-pointer flex items-center justify-between transition-all ${
+                        className={`p-2.5 rounded-lg border-2 cursor-pointer transition-all flex items-center gap-2.5 ${
                           isSelected
                             ? 'bg-[#2b1c12] border-amber-500 shadow-md ring-1 ring-amber-500/50'
                             : 'bg-[#150f0a] border-[#3d2a1c] hover:border-amber-700'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 overflow-hidden">
-                          <img
-                            src={c.avatar || '/assets/images/characters/ngo_quyen.jpg'}
-                            alt={c.name}
-                            className="w-8 h-8 rounded-lg object-cover border border-[#5c4028] shrink-0"
-                          />
-                          <div className="truncate">
-                            <p className="text-xs font-bold text-stone-100 truncate">{c.name}</p>
-                            <p className="text-[10px] text-stone-400 truncate">{c.title || c.faction}</p>
-                          </div>
+                        <img
+                          src={c.avatar || '/assets/images/characters/ngo_quyen.jpg'}
+                          alt={c.name}
+                          className="w-9 h-9 rounded-full object-cover border border-amber-600 shrink-0"
+                        />
+                        <div className="truncate flex-1">
+                          <h4 className="text-xs font-bold text-stone-100 truncate">{c.name}</h4>
+                          <span className="text-[10px] text-amber-400 block truncate">{c.title}</span>
                         </div>
-
-                        {c.id !== 'narrator' && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteCharacter(c.id);
-                            }}
-                            className="text-stone-500 hover:text-red-400 p-1 transition-colors"
-                            title="Xóa nhân vật"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Character Details Column */}
+              {/* Character Details Form (8 cols) */}
               {currentCharacter && (
-                <div className="md:col-span-2 card-solid-dark p-5 rounded-xl border border-[#4a3525] space-y-4">
-                  <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider border-b border-[#3d2a1c] pb-2">
-                    Chi Tiết Tướng Lĩnh: {currentCharacter.name} ({currentCharacter.id})
-                  </h4>
+                <div className="md:col-span-8 card-solid-dark p-5 rounded-xl border border-[#4a3525] space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#3d2a1c] pb-3">
+                    <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
+                      Thông Tin Tướng: {currentCharacter.name} ({currentCharacter.id})
+                    </span>
+                    {Object.keys(formData.characters).length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCharacter(currentCharacter.id)}
+                        className="text-[11px] px-2 py-1 bg-red-950 text-red-300 hover:bg-red-900 rounded border border-red-800 flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Xóa tướng</span>
+                      </button>
+                    )}
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-stone-300 font-medium block mb-1">Tên Danh Xưng</label>
+                      <label className="text-xs text-stone-300 font-medium block mb-1">Tên Tướng / Nhân Vật</label>
                       <input
                         type="text"
                         value={currentCharacter.name}
                         onChange={(e) => handleUpdateCharacter('name', e.target.value)}
-                        placeholder="Ví dụ: Ngô Quyền"
-                        className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525] font-bold focus:outline-none focus:border-amber-500"
+                        placeholder="Ví dụ: Tiền Ngô Vương Ngô Quyền"
+                        className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2.5 rounded border border-[#4a3525] font-bold focus:outline-none focus:border-amber-500"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs text-stone-300 font-medium block mb-1">Chức Vụ / Danh Hiệu</label>
+                      <label className="text-xs text-stone-300 font-medium block mb-1">Chức Vụ / Danh Xưng</label>
                       <input
                         type="text"
                         value={currentCharacter.title}
                         onChange={(e) => handleUpdateCharacter('title', e.target.value)}
-                        placeholder="Ví dụ: Tiết Độ Sứ • Tiền Ngô Vương"
-                        className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525]"
+                        placeholder="Ví dụ: Chủ Tướng Đại Việt"
+                        className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2.5 rounded border border-[#4a3525] focus:outline-none focus:border-amber-500"
                       />
                     </div>
                   </div>
@@ -1133,10 +1486,10 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       <select
                         value={currentCharacter.faction}
                         onChange={(e) => handleUpdateCharacter('faction', e.target.value as any)}
-                        className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525]"
+                        className="w-full bg-[#1b140e] text-stone-100 text-xs px-3 py-2.5 rounded border border-[#4a3525]"
                       >
-                        <option value="viet">Đại Việt / Nghĩa Quân (Đỏ)</option>
-                        <option value="han">Quân Nam Hán (Vàng/Cam)</option>
+                        <option value="viet">Quân Đại Việt (Đỏ Hoàng Gia)</option>
+                        <option value="han">Quân Nam Hán (Xanh Dương)</option>
                         <option value="minh">Quân Nhà Minh (Vàng/Cam)</option>
                         <option value="enemy">Quân Địch Xâm Lược (Cam)</option>
                         <option value="neutral">Dẫn Chuyện / Sử Ký (Trung Lập)</option>
@@ -1174,7 +1527,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
             </div>
           )}
 
-          {/* TAB 5: BỐI CẢNH CHUNG (GENERAL) */}
+          {/* TAB 5: BỐI CẢNH CHIẾN DỊCH (GENERAL) */}
           {activeTab === 'general' && (
             <div className="max-w-3xl mx-auto space-y-5">
               <div className="card-solid-dark p-5 rounded-xl border border-[#4a3525] space-y-4">
@@ -1273,7 +1626,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                 </div>
 
                 <AssetUploader
-                  label="Ảnh Bìa Chiến Dịch (Cover Image)"
+                  label="Ảnh Bìa Chiến Dịch (Cover Image - Cloudinary)"
                   acceptType="image"
                   value={formData.coverImage}
                   onChange={(val) => updateField('coverImage', val)}
@@ -1284,7 +1637,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
             </div>
           )}
 
-          {/* TAB 6: SA BÀN SƠ ĐỒ (VISUAL MAP) */}
+          {/* TAB 6: SA BÀN SƠ ĐỒ CÂY TRUYỆN (VISUAL STORY MAP) */}
           {activeTab === 'map' && (
             <div className="max-w-6xl mx-auto space-y-4">
               <div className="card-solid-dark p-5 rounded-xl border border-[#4a3525] space-y-4">
@@ -1292,7 +1645,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   <div>
                     <h3 className="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
                       <GitBranch className="w-4 h-4 text-amber-400" />
-                      Sa Bàn Mạch Truyện & Cây Phân Nhánh
+                      Sa Bàn Mạch Truyện & Cây Phân Nhánh Toàn Cục
                     </h3>
                     <p className="text-xs text-stone-400 mt-0.5">
                       Bấm vào bất kỳ phân cảnh nào dưới đây để chuyển nhanh sang chỉnh sửa cảnh đó.
@@ -1339,26 +1692,35 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           </h4>
 
                           <p className="text-[11px] text-stone-400">
+                            {sc.location ? `📍 ${sc.location} • ` : ''}
                             {sc.dialogues.length} câu thoại • {sc.timeOfDay}
                           </p>
                         </div>
 
-                        {/* Choices preview */}
-                        <div className="pt-3 mt-2 border-t border-[#3d2a1c] space-y-1">
-                          <span className="text-[10px] font-bold text-stone-500 uppercase block">
-                            Các ngã rẽ ({sc.choices?.length || 0}):
+                        {/* Choices list preview */}
+                        <div className="pt-3 mt-3 border-t border-[#2d1e15] space-y-1">
+                          <span className="text-[10px] text-stone-400 font-bold block uppercase tracking-wider">
+                            Nhánh rẽ tiếp theo:
                           </span>
                           {sc.choices && sc.choices.length > 0 ? (
-                            sc.choices.map((c) => (
-                              <div key={c.id} className="text-[10px] text-amber-300/90 truncate flex items-center gap-1">
-                                <span>↳</span>
-                                <span className="truncate">{c.text}</span>
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-[10px] text-stone-600 italic">
-                              {sc.isEnding ? '🏁 Điểm kết thúc chiến dịch' : '➡️ Tuyến tính'}
+                            <div className="space-y-1">
+                              {sc.choices.map((c, cIdx) => (
+                                <div
+                                  key={cIdx}
+                                  className="text-[11px] text-amber-200/90 flex items-center gap-1.5 truncate bg-[#0f0a06] px-2 py-1 rounded border border-[#3d2a1c]"
+                                >
+                                  <span>➜</span>
+                                  <span className="truncate">{c.text}</span>
+                                  <span className="text-[9px] text-stone-400 ml-auto">({c.nextSceneId})</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : sc.isEnding ? (
+                            <span className="text-[11px] text-emerald-400 font-bold">
+                              🏆 Điểm Kết Thúc Chiến Dịch ({sc.endingRank || 'S'})
                             </span>
+                          ) : (
+                            <span className="text-[11px] text-stone-500 italic">Chưa có nhánh rẽ nào</span>
                           )}
                         </div>
                       </div>

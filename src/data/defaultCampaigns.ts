@@ -77,8 +77,18 @@ export const SAMPLE_CHI_LANG_CAMPAIGN: CampaignLevel = {
       title: 'Hồi 1: Đêm Trăng Nghị Kế',
       chapter: 'Chương I: Bày Binh Bố Trận',
       branchTag: 'Khởi Đầu',
+      location: 'Đại Bản Doanh Lam Sơn',
+      terrainType: 'mountain_pass',
+      tacticalCondition: {
+        label: 'Địa Thế',
+        value: 'Ải núi hiểm trở • Đầm lầy Mã Yên',
+        icon: '⛰️',
+        colorStyle: 'wood',
+      },
+      weatherAmbiance: 'Gió mùa Đông Bắc rít mạnh • Đêm khuya thanh vắng',
+      ambianceSound: 'wind',
       background: 'war_tent',
-      timeOfDay: 'Đêm khuya',
+      timeOfDay: 'Đêm khuya canh ba',
       dialogues: [
         {
           id: 'cl_d1',
@@ -132,8 +142,18 @@ export const SAMPLE_CHI_LANG_CAMPAIGN: CampaignLevel = {
       title: 'Hồi 2: Sấm Dậy Núi Mã Yên',
       chapter: 'Chương II: Đại Thắng Chi Lăng',
       branchTag: 'Chính Sử Đại Thắng',
+      location: 'Hẻm Núi Mã Yên - Ải Chi Lăng',
+      terrainType: 'mountain_pass',
+      tacticalCondition: {
+        label: 'Phục Kích',
+        value: 'Kỵ binh giặc sa lầy • Hỏa tiễn rền vang',
+        icon: '🏹',
+        colorStyle: 'danger',
+      },
+      weatherAmbiance: 'Trưa nắng gắt • Tiếng hò reo vang dội núi rừng',
+      ambianceSound: 'wind',
       background: 'counter_attack',
-      timeOfDay: 'Trưa triều dâng',
+      timeOfDay: 'Chính ngọ',
       dialogues: [
         {
           id: 'cl_d4',
@@ -170,8 +190,18 @@ export const SAMPLE_CHI_LANG_CAMPAIGN: CampaignLevel = {
       title: 'Hồi 2: Huyết Chiến Cửa Ải',
       chapter: 'Chương II: Gian Truân Kháng Chiến',
       branchTag: 'Cầm Cự Gian Nan',
+      location: 'Cửa Cổng Ải Chi Lăng',
+      terrainType: 'citadel_fort',
+      tacticalCondition: {
+        label: 'Cầm Cự',
+        value: 'Chặn giặc giữ phòng tuyến',
+        icon: '🛡️',
+        colorStyle: 'iron',
+      },
+      weatherAmbiance: 'Khói bụi mịt mù • Gió thổi cát bay',
+      ambianceSound: 'wind',
       background: 'planting_stakes',
-      timeOfDay: 'Xế chiều triều rút',
+      timeOfDay: 'Xế chiều tà dương',
       dialogues: [
         {
           id: 'cl_d7',
