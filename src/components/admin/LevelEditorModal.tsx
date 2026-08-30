@@ -11,16 +11,12 @@ import {
   Award,
   ArrowUp,
   ArrowDown,
-  Volume2,
-  Clock,
   Play,
   Copy,
   GitBranch,
   Layers,
   MapPin,
-  Mountain,
   Compass,
-  Shield,
 } from 'lucide-react';
 import {
   CampaignLevel,
@@ -28,8 +24,6 @@ import {
   SceneData,
   DialogueItem,
   ChoiceOption,
-  TerrainType,
-  TacticalCondition,
 } from '../../types/game';
 import { AssetUploader } from './AssetUploader';
 
@@ -71,139 +65,14 @@ const BGM_PRESETS = [
   { label: 'Trầm tư nghị kế (Calm)', value: 'calm' },
 ];
 
-const AMBIANCE_PRESETS = [
-  { label: 'Không âm thanh nền (None)', value: '' },
-  { label: '🌊 Sóng biển dào dạt (Waves)', value: 'waves' },
-  { label: '💨 Gió núi gầm rú (Wind)', value: 'wind' },
-  { label: '🔥 Lửa trại bập bùng (Fire)', value: 'fire' },
-  { label: '🦗 Côn trùng đêm thanh vắng (Night Insects)', value: 'night_insects' },
-  { label: '🌧️ Mưa bão lạnh buốt (Rain)', value: 'rain' },
-  { label: '⛺ Doanh trại quân cơ (Army Camp)', value: 'army_camp' },
-];
-
-interface BattlefieldArchetype {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  location: string;
-  terrainType: TerrainType;
-  tacticalCondition: TacticalCondition;
-  timeOfDay: string;
-  weatherAmbiance: string;
-  ambianceSound: string;
-  bgm: string;
-}
-
-const BATTLEFIELD_ARCHETYPES: BattlefieldArchetype[] = [
-  {
-    id: 'naval',
-    name: 'Thủy Chiến Sông Biển',
-    icon: '🌊',
-    description: 'Bạch Đằng, Rạch Gầm - Xoài Mút, Vân Đồn, Hàm Tử, Thị Nại',
-    location: 'Cửa Biển Bạch Đằng Giang',
-    terrainType: 'river_sea',
-    tacticalCondition: {
-      label: 'Thủy Triều',
-      value: 'Triều rút gấp lộ bãi cọc nhọn',
-      icon: '🌊',
-      colorStyle: 'bronze',
-    },
-    timeOfDay: 'Bình minh triều rút',
-    weatherAmbiance: 'Sương mù bảng lảng • Sóng cuộn dồn dập',
-    ambianceSound: 'waves',
-    bgm: 'epic_war',
-  },
-  {
-    id: 'mountain_pass',
-    name: 'Ải Núi & Đầm Lầy',
-    icon: '⛰️',
-    description: 'Ải Chi Lăng, Đèo Tam Điệp, Đèo Ba Dội, Đèo Ngang',
-    location: 'Ải Chi Lăng - Đầm Lầy Mã Yên',
-    terrainType: 'mountain_pass',
-    tacticalCondition: {
-      label: 'Địa Thế',
-      value: 'Đầm lầy bùn lún vây hãm kỵ binh',
-      icon: '⛰️',
-      colorStyle: 'wood',
-    },
-    timeOfDay: 'Trưa nắng gắt',
-    weatherAmbiance: 'Gió núi gầm rú • Bùn lầy lún sâu',
-    ambianceSound: 'wind',
-    bgm: 'suspense',
-  },
-  {
-    id: 'citadel_fort',
-    name: 'Thành Trì & Chiến Lũy',
-    icon: '🏰',
-    description: 'Sông Như Nguyệt, Thành Đông Quan, Thành Hà Nội, Thành Cổ Loa',
-    location: 'Chiến Lũy Nam Sông Như Nguyệt',
-    terrainType: 'citadel_fort',
-    tacticalCondition: {
-      label: 'Chiến Lũy',
-      value: 'Phòng tuyến cọc tre giáp hào sâu kiên cố',
-      icon: '🏰',
-      colorStyle: 'iron',
-    },
-    timeOfDay: 'Canh ba nửa đêm',
-    weatherAmbiance: 'Đêm tối tĩnh mịch • Ngọn đuốc bập bùng',
-    ambianceSound: 'army_camp',
-    bgm: 'calm',
-  },
-  {
-    id: 'plains_fire',
-    name: 'Bình Nguyên & Hỏa Công',
-    icon: '🔥',
-    description: 'Đồn Ngọc Hồi - Đống Đa, Chúc Động, Tốt Động',
-    location: 'Đồn Ngọc Hồi - Gò Đống Đa',
-    terrainType: 'plains',
-    tacticalCondition: {
-      label: 'Khí Quyển',
-      value: 'Hỏa hổ & Rơm tẩm dầu mù mịt giặc loạn',
-      icon: '🔥',
-      colorStyle: 'danger',
-    },
-    timeOfDay: 'Mờ sáng mùng 5 Tết',
-    weatherAmbiance: 'Khói lửa ngút trời • Tiếng súng pháo rền vang',
-    ambianceSound: 'fire',
-    bgm: 'epic_war',
-  },
-  {
-    id: 'dense_forest',
-    name: 'Rừng Rậm Mai Phục',
-    icon: '🌲',
-    description: 'Rừng sâu Lam Sơn, Chiến khu Ba Bể, Yên Thế, Rừng Sác',
-    location: 'Rừng Sâu Lam Sơn',
-    terrainType: 'dense_forest',
-    tacticalCondition: {
-      label: 'Phục Binh',
-      value: 'Rừng rậm che giấu vạn quân mai phục',
-      icon: '🌲',
-      colorStyle: 'nature',
-    },
-    timeOfDay: 'Đêm khuya thanh vắng',
-    weatherAmbiance: 'Đêm đen mịt mùng • Côn trùng rỉ rả',
-    ambianceSound: 'night_insects',
-    bgm: 'suspense',
-  },
-  {
-    id: 'swamp_reeds',
-    name: 'Đầm Lầy Lau Sậy',
-    icon: '🌾',
-    description: 'Đầm Dạ Trạch (Triệu Quang Phục), Đồng Tháp Mười, U Minh',
-    location: 'Đầm Dạ Trạch - Bãi Màn Lau Sậy',
-    terrainType: 'swamp',
-    tacticalCondition: {
-      label: 'Ẩn Nấp',
-      value: 'Lau sậy rậm rạp xuất quỷ nhập thần',
-      icon: '🌾',
-      colorStyle: 'wood',
-    },
-    timeOfDay: 'Đêm tối mù sương',
-    weatherAmbiance: 'Sương đêm ẩm ướt • Nước bùn mênh mông',
-    ambianceSound: 'night_insects',
-    bgm: 'suspense',
-  },
+const QUICK_BATTLEFIELD_SUGGESTIONS = [
+  '📍 Cửa Sông Bạch Đằng • 🌊 Triều rút gấp lộ bãi cọc',
+  '📍 Ải Chi Lăng • ⛰️ Đầm lầy Mã Yên phục kích',
+  '📍 Sông Như Nguyệt • 🏰 Chiến lũy phòng tuyến kiên cố',
+  '📍 Đồn Ngọc Hồi • 🔥 Hỏa hổ đột kích mùng 5 Tết',
+  '📍 Rừng Sâu Lam Sơn • 🌲 Phục binh du kích',
+  '📍 Đầm Dạ Trạch • 🌾 Lau sậy ẩn hiện xuất quỷ nhập thần',
+  '📍 Sông Tiền Rạch Gầm • ⛵ Hỏa thuyền thiêu giặc Xiêm',
 ];
 
 export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
@@ -278,16 +147,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
       id: newId,
       title: titleName || `Hồi ${sceneIndex}: Diễn Biến Mới`,
       chapter: `Chương ${sceneIndex}`,
-      branchTag: 'Chiến Lược',
-      location: 'Chiến Trường Sa Bàn',
-      terrainType: 'custom',
-      timeOfDay: 'Đêm khuya',
-      tacticalCondition: {
-        label: 'Trận Thế',
-        value: 'Hai quân đối lũy',
-        icon: '⚔️',
-        colorStyle: 'bronze',
-      },
+      battlefieldInfo: '📍 Chiến Trường Sa Bàn • ⚔️ Hai quân đối lũy',
       background: 'war_tent',
       dialogues: [
         {
@@ -331,16 +191,6 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         [selectedSceneId]: { ...prev.scenes[selectedSceneId], [key]: value },
       },
     }));
-  };
-
-  const handleApplyArchetype = (arch: BattlefieldArchetype) => {
-    if (!selectedSceneId || !currentScene) return;
-    handleUpdateScene('location', arch.location);
-    handleUpdateScene('terrainType', arch.terrainType);
-    handleUpdateScene('tacticalCondition', arch.tacticalCondition);
-    handleUpdateScene('timeOfDay', arch.timeOfDay);
-    handleUpdateScene('weatherAmbiance', arch.weatherAmbiance);
-    handleUpdateScene('ambianceSound', arch.ambianceSound);
   };
 
   const handleDeleteScene = (sceneId: string) => {
@@ -513,7 +363,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               }`}
             >
               <Film className="w-3.5 h-3.5" />
-              <span>1. Phân Cảnh & Mạch Truyện</span>
+              <span>1. Phân Cảnh & Lời Thoại</span>
             </button>
 
             <button
@@ -588,7 +438,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
 
         {/* Tab Content Container */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0c0805]">
-          {/* TAB 1: PHÂN CẢNH & MẠCH TRUYỆN (CORE WORKFLOW) */}
+          {/* TAB 1: PHÂN CẢNH & LỜI THOẠI (TINH GỌN & THỰC DỤNG) */}
           {activeTab === 'scenes' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-5 max-w-7xl mx-auto">
               {/* Scene List Sidebar (4 cols) */}
@@ -640,8 +490,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                         </div>
 
                         <div className="flex items-center justify-between text-[10px] text-stone-400">
-                          <span className="truncate max-w-[140px]">
-                            {s.location ? `📍 ${s.location}` : s.chapter}
+                          <span className="truncate max-w-[150px]">
+                            {s.battlefieldInfo || s.location || s.chapter}
                           </span>
                           <span>{s.dialogues.length} thoại • {s.choices?.length || 0} nhánh</span>
                         </div>
@@ -654,12 +504,12 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               {/* Scene Detail & Dialogues Editor (8 cols) */}
               {currentScene ? (
                 <div className="md:col-span-8 card-solid-dark p-4 sm:p-5 rounded-xl border border-[#4a3525] space-y-5">
-                  {/* Scene Settings Header & Battlefield Archetypes */}
-                  <div className="bg-[#160f0a] p-3.5 rounded-lg border border-[#3d2a1c] space-y-3.5">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
+                  {/* KHỐI 1: BỐI CẢNH CHIẾN TRƯỜNG (TINH GỌN 3 MỤC) */}
+                  <div className="bg-[#160f0a] p-4 rounded-xl border border-[#3d2a1c] space-y-3.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2 border-b border-[#2d1e15] pb-2.5">
                       <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                         <Film className="w-3.5 h-3.5 text-amber-400" />
-                        Sa Bàn & Bối Cảnh Phân Cảnh ({currentScene.id})
+                        1. Bối Cảnh Phân Cảnh ({currentScene.id})
                       </span>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -685,31 +535,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Quick Battlefield Archetype Presets Bar */}
-                    <div className="bg-[#100b07] p-2.5 rounded-lg border border-[#3d2a1c] space-y-1.5">
-                      <div className="flex items-center justify-between text-[11px] text-amber-300 font-bold">
-                        <span className="flex items-center gap-1">
-                          <Compass className="w-3.5 h-3.5 text-amber-400" />
-                          Mẫu Chiến Trường Nhanh (Click để tự động điền bối cảnh mẫu):
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {BATTLEFIELD_ARCHETYPES.map((arch) => (
-                          <button
-                            key={arch.id}
-                            type="button"
-                            onClick={() => handleApplyArchetype(arch)}
-                            className="text-[10px] px-2 py-1 rounded bg-[#1e150f] hover:bg-amber-900 text-stone-300 hover:text-amber-100 border border-[#4a3525] flex items-center gap-1 cursor-pointer transition-colors"
-                            title={arch.description}
-                          >
-                            <span>{arch.icon}</span>
-                            <span>{arch.name}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Title, Chapter, Branch Tag */}
+                    {/* Title & Chapter */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="sm:col-span-2">
                         <label className="text-[11px] text-stone-300 font-medium block mb-1">Tiêu Đề Cảnh</label>
@@ -717,7 +543,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           type="text"
                           value={currentScene.title}
                           onChange={(e) => handleUpdateScene('title', e.target.value)}
-                          placeholder="Ví dụ: Hồi 2: Sấm Dậy Bạch Đằng"
+                          placeholder="Ví dụ: Hồi 1: Bão Táp Biên Cương"
                           className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525] font-bold focus:outline-none focus:border-amber-500"
                         />
                       </div>
@@ -734,224 +560,86 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Location, Terrain Type, Time & Weather Ambiance */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                      <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-amber-400" />
-                          Địa Điểm Chiến Trường
-                        </label>
-                        <input
-                          type="text"
-                          value={currentScene.location || ''}
-                          onChange={(e) => handleUpdateScene('location', e.target.value)}
-                          placeholder="Ví dụ: Cửa Biển Bạch Đằng / Ải Chi Lăng..."
-                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
-                          <Mountain className="w-3 h-3 text-amber-400" />
-                          Loại Địa Hình
-                        </label>
-                        <select
-                          value={currentScene.terrainType || 'custom'}
-                          onChange={(e) => handleUpdateScene('terrainType', e.target.value as TerrainType)}
-                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
-                        >
-                          <option value="river_sea">🌊 Thủy chiến sông biển</option>
-                          <option value="mountain_pass">⛰️ Đèo ải núi hiểm trở</option>
-                          <option value="dense_forest">🌲 Rừng rậm mai phục</option>
-                          <option value="citadel_fort">🏰 Thành trì chiến lũy</option>
-                          <option value="plains">🌾 Bình nguyên khoáng đạt</option>
-                          <option value="swamp">🌿 Đầm lầy lau sậy</option>
-                          <option value="encampment">⛺ Doanh trại quân cơ</option>
-                          <option value="custom">🛠️ Tùy biến tự do</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-amber-400" />
-                          Thời Điểm
-                        </label>
-                        <input
-                          type="text"
-                          value={currentScene.timeOfDay}
-                          onChange={(e) => handleUpdateScene('timeOfDay', e.target.value)}
-                          placeholder="Đêm khuya / Bình minh..."
-                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-amber-400" />
-                          Khí Quyển / Thời Tiết
-                        </label>
-                        <input
-                          type="text"
-                          value={currentScene.weatherAmbiance || ''}
-                          onChange={(e) => handleUpdateScene('weatherAmbiance', e.target.value)}
-                          placeholder="Sương mù / Gió bão / Khói lửa..."
-                          className="w-full bg-[#100b07] text-stone-100 text-xs px-2.5 py-2 rounded border border-[#4a3525]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Dynamic Tactical Condition Setup (Universal on Game HUD) */}
-                    <div className="bg-[#100b07] p-3 rounded-lg border border-[#3d2a1c] space-y-2">
+                    {/* Battlefield Info (1 Single Line for Location, Time & Tactical state) */}
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-[11px] text-amber-300 font-bold flex items-center gap-1.5">
-                          <Shield className="w-3.5 h-3.5 text-amber-400" />
-                          Yếu Tố Chiến Thuật Năng Động (Hiển thị trực tiếp trên thanh Game HUD):
+                        <label className="text-[11px] text-stone-300 font-medium flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                          Trạng Thái & Không Gian Chiến Trường (Hiển thị góc trên Game HUD):
                         </label>
-                        <span className="text-[10px] text-stone-400">
-                          Tùy biến nhãn & trạng thái cho mọi loại trận chiến
-                        </span>
+                        <span className="text-[10px] text-stone-400">1 dòng súc tích mô tả địa danh & thế trận</span>
                       </div>
+                      <input
+                        type="text"
+                        value={currentScene.battlefieldInfo || currentScene.location || ''}
+                        onChange={(e) => {
+                          handleUpdateScene('battlefieldInfo', e.target.value);
+                          handleUpdateScene('location', e.target.value);
+                        }}
+                        placeholder="Ví dụ: 📍 Cửa Sông Bạch Đằng • 🌊 Triều rút gấp lộ bãi cọc"
+                        className="w-full bg-[#100b07] text-amber-200 text-xs px-3 py-2.5 rounded-lg border border-[#4a3525] font-medium focus:outline-none focus:border-amber-500"
+                      />
 
-                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
-                        <div>
-                          <label className="text-[10px] text-stone-400 block mb-1">Biểu tượng Icon:</label>
-                          <input
-                            type="text"
-                            value={currentScene.tacticalCondition?.icon || '⚔️'}
-                            onChange={(e) =>
-                              handleUpdateScene('tacticalCondition', {
-                                label: currentScene.tacticalCondition?.label || 'Trận Thế',
-                                value: currentScene.tacticalCondition?.value || '',
-                                colorStyle: currentScene.tacticalCondition?.colorStyle || 'bronze',
-                                icon: e.target.value,
-                              })
-                            }
-                            placeholder="🌊, ⛰️, 🔥, 🏰, 🌲..."
-                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525] text-center"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[10px] text-stone-400 block mb-1">Tên yếu tố (Label):</label>
-                          <input
-                            type="text"
-                            value={currentScene.tacticalCondition?.label || ''}
-                            onChange={(e) =>
-                              handleUpdateScene('tacticalCondition', {
-                                icon: currentScene.tacticalCondition?.icon || '⚔️',
-                                value: currentScene.tacticalCondition?.value || '',
-                                colorStyle: currentScene.tacticalCondition?.colorStyle || 'bronze',
-                                label: e.target.value,
-                              })
-                            }
-                            placeholder="Thủy triều / Địa thế / Khí quyển..."
-                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525]"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[10px] text-stone-400 block mb-1">Trạng thái (Value):</label>
-                          <input
-                            type="text"
-                            value={currentScene.tacticalCondition?.value || ''}
-                            onChange={(e) =>
-                              handleUpdateScene('tacticalCondition', {
-                                icon: currentScene.tacticalCondition?.icon || '⚔️',
-                                label: currentScene.tacticalCondition?.label || 'Trận Thế',
-                                colorStyle: currentScene.tacticalCondition?.colorStyle || 'bronze',
-                                value: e.target.value,
-                              })
-                            }
-                            placeholder="Triều rút gấp / Đầm lầy lún sâu..."
-                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525]"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[10px] text-stone-400 block mb-1">Màu sắc hiển thị:</label>
-                          <select
-                            value={currentScene.tacticalCondition?.colorStyle || 'bronze'}
-                            onChange={(e) =>
-                              handleUpdateScene('tacticalCondition', {
-                                icon: currentScene.tacticalCondition?.icon || '⚔️',
-                                label: currentScene.tacticalCondition?.label || 'Trận Thế',
-                                value: currentScene.tacticalCondition?.value || '',
-                                colorStyle: e.target.value as any,
-                              })
-                            }
-                            className="w-full bg-[#160f0a] text-stone-100 text-xs px-2.5 py-1.5 rounded border border-[#4a3525]"
+                      {/* Quick Suggestions Chips */}
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        <span className="text-[10px] text-stone-500 self-center">Gợi ý mẫu:</span>
+                        {QUICK_BATTLEFIELD_SUGGESTIONS.map((sug, sIdx) => (
+                          <button
+                            key={sIdx}
+                            type="button"
+                            onClick={() => {
+                              handleUpdateScene('battlefieldInfo', sug);
+                              handleUpdateScene('location', sug);
+                            }}
+                            className="text-[10px] px-2 py-0.5 rounded bg-[#1e150f] hover:bg-amber-900 text-stone-300 hover:text-amber-100 border border-[#3d2a1c] cursor-pointer transition-colors"
                           >
-                            <option value="bronze">Đồng thau (Bronze)</option>
-                            <option value="wood">Gỗ lim (Wood)</option>
-                            <option value="iron">Sắt thép (Iron)</option>
-                            <option value="danger">Báo động đỏ (Danger)</option>
-                            <option value="nature">Rừng rậm xanh (Nature)</option>
-                          </select>
-                        </div>
+                            {sug}
+                          </button>
+                        ))}
                       </div>
                     </div>
 
-                    {/* Audio Ambiance & Background Image Uploader */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                      <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1 flex items-center gap-1">
-                          <Volume2 className="w-3 h-3 text-amber-400" />
-                          Âm Thanh Môi Trường Nền (Loop Ambiance)
-                        </label>
-                        <select
-                          value={currentScene.ambianceSound || ''}
-                          onChange={(e) => handleUpdateScene('ambianceSound', e.target.value)}
-                          className="w-full bg-[#100b07] text-stone-100 text-xs px-3 py-2 rounded border border-[#4a3525]"
-                        >
-                          {AMBIANCE_PRESETS.map((amb) => (
-                            <option key={amb.value} value={amb.value}>
-                              {amb.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                    {/* Scene Background & Initial Scene Button */}
+                    <div className="pt-1 space-y-3">
+                      <AssetUploader
+                        label="Hình Nền Chiến Trường (Cloudinary CDN)"
+                        acceptType="image"
+                        value={currentScene.customBackgroundUrl || currentScene.background}
+                        onChange={(val) => {
+                          handleUpdateScene('customBackgroundUrl', val);
+                          handleUpdateScene('background', val);
+                        }}
+                        presetOptions={BACKGROUND_PRESETS}
+                        placeholder="Tải hình nền chiến trường lên Cloudinary..."
+                      />
 
-                      <div>
-                        <label className="text-[11px] text-stone-300 font-medium block mb-1">Cảnh Khởi Đầu Màn?</label>
+                      <div className="flex items-center justify-between pt-1">
                         <button
                           type="button"
                           onClick={() => updateField('initialSceneId', currentScene.id)}
-                          className={`w-full py-2 px-2 rounded text-xs font-bold border transition-colors cursor-pointer ${
+                          className={`text-xs px-3.5 py-1.5 rounded-lg font-bold border transition-colors cursor-pointer ${
                             formData.initialSceneId === currentScene.id
                               ? 'bg-amber-800 text-amber-100 border-amber-500'
                               : 'bg-[#100b07] text-stone-400 border-[#4a3525] hover:text-stone-200'
                           }`}
                         >
-                          {formData.initialSceneId === currentScene.id ? '✓ Đang là cảnh mở đầu' : 'Đặt làm cảnh mở đầu'}
+                          {formData.initialSceneId === currentScene.id ? '✓ Đang là cảnh mở đầu game' : 'Đặt làm cảnh mở đầu game'}
                         </button>
                       </div>
                     </div>
-
-                    {/* Scene Background Uploader */}
-                    <AssetUploader
-                      label="Hình Nền Phân Cảnh (Background Scene - Cloudinary)"
-                      acceptType="image"
-                      value={currentScene.customBackgroundUrl || currentScene.background}
-                      onChange={(val) => {
-                        handleUpdateScene('customBackgroundUrl', val);
-                        handleUpdateScene('background', val);
-                      }}
-                      presetOptions={BACKGROUND_PRESETS}
-                      placeholder="Tải hình nền chiến trường lên Cloudinary..."
-                    />
                   </div>
 
-                  {/* Dialogues Storyboard Stream */}
+                  {/* KHỐI 2: DIỄN BIẾN LỜI THOẠI & KỊCH BẢN (STORYBOARD STREAM) */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-[#3d2a1c]">
                       <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                         <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                        Dòng Diễn Biến & Cuộc Hội Thoại ({currentScene.dialogues.length} lượt)
+                        2. Lời Thoại & Diễn Biến ({currentScene.dialogues.length} câu)
                       </span>
                       <button
                         type="button"
                         onClick={handleAddDialogue}
-                        className="btn-material-bronze text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-amber-100 font-bold cursor-pointer shadow-md"
+                        className="btn-material-bronze text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 text-amber-100 font-bold cursor-pointer shadow-md"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>+ Thêm Câu Thoại</span>
@@ -1021,7 +709,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                                 )}
                               </div>
 
-                              {/* Action controls: Move Up, Move Down, Duplicate, Delete */}
+                              {/* Action controls */}
                               <div className="flex items-center gap-1">
                                 <button
                                   type="button"
@@ -1090,7 +778,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                               </div>
 
                               <div>
-                                <label className="text-stone-400 block mb-1 text-[11px]">Nhạc Nền Thay Đổi (BGM):</label>
+                                <label className="text-stone-400 block mb-1 text-[11px]">Nhạc Nền (BGM):</label>
                                 <select
                                   value={diag.bgm || ''}
                                   onChange={(e) =>
@@ -1162,7 +850,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                   <div className="text-center py-10 bg-[#140e0a] rounded-xl border border-[#3d2a1c] space-y-2">
                     <p className="text-xs font-bold text-amber-400">Chưa có lựa chọn nào cho phân cảnh này.</p>
                     <p className="text-[11px] text-stone-400">
-                      Nếu không có lựa chọn, phân cảnh sẽ tự động kết thúc hoặc chuyển sang cảnh tiếp theo.
+                      Nếu không có lựa chọn, phân cảnh sẽ tự động chuyển tiếp hoặc kết thúc màn chơi.
                     </p>
                   </div>
                 )}
@@ -1692,8 +1380,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                           </h4>
 
                           <p className="text-[11px] text-stone-400">
-                            {sc.location ? `📍 ${sc.location} • ` : ''}
-                            {sc.dialogues.length} câu thoại • {sc.timeOfDay}
+                            {sc.battlefieldInfo || sc.location ? `📍 ${sc.battlefieldInfo || sc.location} • ` : ''}
+                            {sc.dialogues.length} câu thoại
                           </p>
                         </div>
 

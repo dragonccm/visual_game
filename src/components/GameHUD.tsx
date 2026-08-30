@@ -47,51 +47,15 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onOpenLevelSelect,
   onRestart,
 }) => {
-  // Dynamic Tactical & Environmental Condition Badge (Universal for all historical battles)
-  const getTacticalBadge = () => {
-    if (scene.tacticalCondition && scene.tacticalCondition.value) {
-      const { label, value, icon, colorStyle } = scene.tacticalCondition;
-      let btnStyle = 'btn-material-bronze';
-      if (colorStyle === 'iron') btnStyle = 'btn-material-iron';
-      else if (colorStyle === 'wood') btnStyle = 'btn-material-wood';
-      else if (colorStyle === 'danger') btnStyle = 'bg-red-950/90 text-red-200 border-2 border-red-600 shadow-md';
-      else if (colorStyle === 'nature') btnStyle = 'bg-emerald-950/90 text-emerald-200 border-2 border-emerald-600 shadow-md';
-
-      return {
-        icon: icon || '⚔️',
-        fullText: `${label ? `${label}: ` : ''}${value}`,
-        shortText: value,
-        classStyle: btnStyle,
-      };
-    }
-
-    // Fallback: Tide state for naval campaigns or general time of day
-    if (scene.tideState && scene.tideState !== 'neutral') {
-      switch (scene.tideState) {
-        case 'high':
-          return { icon: '🌊', fullText: 'Thủy Triều: Triều Cường Ngập Bãi Cọc', shortText: 'Triều Cường', classStyle: 'btn-material-iron' };
-        case 'falling':
-          return { icon: '🌊', fullText: 'Thủy Triều: Triều Rút Gấp Lộ Bãi Cọc', shortText: 'Triều Rút', classStyle: 'btn-material-bronze' };
-        case 'low':
-          return { icon: '🌊', fullText: 'Thủy Triều: Triều Kiệt Đáy Sông', shortText: 'Triều Kiệt', classStyle: 'btn-material-wood' };
-        default:
-          break;
-      }
-    }
-
-    return {
-      icon: '⏳',
-      fullText: `${scene.timeOfDay || 'Chiến Cục Diễn Biến'}`,
-      shortText: scene.timeOfDay || 'Chiến Cục',
-      classStyle: 'btn-material-iron',
-    };
-  };
-
-  const badge = getTacticalBadge();
+  // Trạng thái chiến trường ngắn gọn (Ưu tiên battlefieldInfo, fallback location/timeOfDay)
+  const battlefieldDisplay =
+    scene.battlefieldInfo ||
+    (scene.location ? `📍 ${scene.location}` : '') ||
+    (scene.timeOfDay ? `⏳ ${scene.timeOfDay}` : '⚔️ Diễn Biến Trận Đánh');
 
   return (
     <header className="absolute top-0 left-0 right-0 z-30 px-3 md:px-6 py-2 flex items-center justify-between border-b-2 border-[#422c1b] bg-[#120d09] shadow-xl select-none">
-      {/* Left: Chapter info, Location, Branch Tag & Commander Name */}
+      {/* Left: Chapter info, Scene title & Commander Name */}
       <div className="flex items-center gap-2.5">
         <div className="hidden sm:flex flex-col">
           <div className="flex items-center gap-2">
@@ -100,12 +64,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               <span>•</span>
               <span className="text-[#f5ebd9]">{playerName}</span>
             </span>
-            {scene.location && (
-              <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-[#1e150f] text-amber-300 border border-[#5a3d28] flex items-center gap-1">
-                <MapPin className="w-2.5 h-2.5 text-amber-400" />
-                <span>{scene.location}</span>
-              </span>
-            )}
             {scene.branchTag && (
               <span className="px-2 py-0.5 rounded text-[9px] font-bold btn-material-wood text-[#d4af37]">
                 {scene.branchTag}
@@ -116,25 +74,23 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             {scene.title}
           </h2>
         </div>
-        <div className="sm:hidden text-xs font-bold text-[#d4af37] flex items-center gap-1">
-          {scene.location && <MapPin className="w-3 h-3" />}
-          <span className="truncate max-w-[120px]">{scene.location || scene.title}</span>
+        <div className="sm:hidden text-xs font-bold text-[#d4af37] flex items-center gap-1 truncate max-w-[120px]">
+          <span>{scene.title}</span>
         </div>
       </div>
 
-      {/* Center: Dynamic Tactical/Terrain Condition, Morale & Study Mode Toggle */}
+      {/* Center: Battlefield Condition & Morale Bar */}
       <div className="flex items-center gap-2 md:gap-3">
-        {/* Dynamic Tactical Condition Badge */}
+        {/* Solid Battlefield Status Badge */}
         <div
-          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold shadow-md ${badge.classStyle}`}
-          title={badge.fullText}
+          className="btn-material-bronze inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold shadow-md truncate max-w-[200px] md:max-w-xs"
+          title={battlefieldDisplay}
         >
-          <span className="text-sm shrink-0">{badge.icon}</span>
-          <span className="hidden md:inline">{badge.fullText}</span>
-          <span className="md:hidden">{badge.shortText}</span>
+          <MapPin className="w-3.5 h-3.5 shrink-0 text-[#d4af37]" />
+          <span className="truncate">{battlefieldDisplay}</span>
         </div>
 
-        {/* Morale Bar - Solid Wood & Bronze Style */}
+        {/* Morale Bar */}
         <div className="flex items-center gap-2 px-3 py-1 rounded-lg wood-panel-solid text-xs font-bold border border-[#5a3d28]">
           <span className="text-[11px] text-[#faebd7]">Nhuệ Khí:</span>
           <div className="w-16 md:w-24 bg-[#0a0705] h-3 rounded-full overflow-hidden border border-[#3b2718] p-0.5">
@@ -163,7 +119,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         </button>
       </div>
 
-      {/* Right: Actions (Codex, History, Voice, Mute, Flowchart, Level Select) */}
+      {/* Right: Actions */}
       <div className="flex items-center gap-1.5 md:gap-2">
         {onOpenLevelSelect && (
           <button

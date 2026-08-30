@@ -9,18 +9,8 @@ export const STORY_SCENES: Record<string, SceneData> = {
     title: 'Hồi 1: Bão Táp Biên Cương',
     chapter: 'Chương I: Quyết Sách',
     branchTag: 'Khởi Đầu',
-    location: 'Trướng Quân Tiền Ngô Vương - Cửa Sông Bạch Đằng',
-    terrainType: 'river_sea',
-    tacticalCondition: {
-      label: 'Thủy Triều',
-      value: 'Nước đứng • Chuẩn bị bãi cọc',
-      icon: '🌊',
-      colorStyle: 'bronze',
-    },
-    weatherAmbiance: 'Gió mùa Đông Bắc • Đêm tối mịt mùng',
-    ambianceSound: 'waves',
+    battlefieldInfo: '📍 Cửa Sông Bạch Đằng • 🌊 Triều rút gấp lộ bãi cọc',
     background: 'war_tent',
-    tideState: 'neutral',
     timeOfDay: 'Đêm khuya',
     dialogues: [
       {
