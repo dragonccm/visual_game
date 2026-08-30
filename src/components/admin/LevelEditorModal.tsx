@@ -82,12 +82,36 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
   onSave,
   onPlaytest,
 }) => {
+  const DRAFT_KEY = `visual_game_editor_draft_${level.id}`;
   const [activeTab, setActiveTab] = useState<TabType>('scenes');
-  const [formData, setFormData] = useState<CampaignLevel>(JSON.parse(JSON.stringify(level)));
+  const [formData, setFormData] = useState<CampaignLevel>(() => {
+    try {
+      const savedDraft = localStorage.getItem(`visual_game_editor_draft_${level.id}`);
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && parsed.id === level.id) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Ignore
+    }
+    return JSON.parse(JSON.stringify(level));
+  });
+
   const [selectedSceneId, setSelectedSceneId] = useState<string>(
-    level.initialSceneId || Object.keys(level.scenes)[0] || ''
+    formData.initialSceneId || Object.keys(formData.scenes)[0] || ''
   );
-  const [selectedCharId, setSelectedCharId] = useState<string>(Object.keys(level.characters)[0] || '');
+  const [selectedCharId, setSelectedCharId] = useState<string>(Object.keys(formData.characters)[0] || '');
+
+  // Tự động lưu bản nháp vào localStorage mỗi khi chỉnh sửa
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
+    } catch {
+      // Ignore
+    }
+  }, [formData, DRAFT_KEY]);
 
   if (!isOpen) return null;
 
@@ -299,6 +323,11 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     if (!formData.initialSceneId || !formData.scenes[formData.initialSceneId]) {
       alert('Vui lòng chọn phân cảnh khởi đầu hợp lệ.');
       return;
+    }
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      // Ignore
     }
     onSave(formData);
   };

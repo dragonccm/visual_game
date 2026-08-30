@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { CHARACTERS } from '../data/characters';
 import { CharacterId } from '../types/game';
 import { soundEngine } from '../utils/soundEngine';
-import { Shield, Volume2, VolumeX, Sword, Play, ListOrdered, Sliders, Lock, LogOut } from 'lucide-react';
+import { Shield, Volume2, VolumeX, Sword, Play, ListOrdered, Sliders, Lock, LogOut, FastForward } from 'lucide-react';
 
 interface LandingScreenProps {
   onStartGame: (playerName: string, selectedHero: CharacterId) => void;
+  onResumeGame?: () => void;
+  hasSavedSession?: boolean;
+  savedSessionLevelTitle?: string;
   onOpenLevelSelect: () => void;
   onOpenAdmin: () => void;
   onOpenLogin: () => void;
@@ -17,6 +20,9 @@ interface LandingScreenProps {
 
 export const LandingScreen: React.FC<LandingScreenProps> = ({
   onStartGame,
+  onResumeGame,
+  hasSavedSession,
+  savedSessionLevelTitle,
   onOpenLevelSelect,
   onOpenAdmin,
   onOpenLogin,
@@ -34,6 +40,15 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
     soundEngine.playSFX('horn');
     soundEngine.playSFX('drum');
     onStartGame(playerName.trim() || 'Dũng Sĩ Đại Việt', selectedHero);
+  };
+
+  const handleResume = () => {
+    if (onResumeGame) {
+      soundEngine.unlockAudio();
+      soundEngine.playSFX('horn');
+      soundEngine.playSFX('drum');
+      onResumeGame();
+    }
   };
 
   return (
@@ -140,14 +155,29 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons: Play Default & Level Select */}
+          {/* Action Buttons: Resume, Play New & Level Select */}
           <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start w-full">
+            {hasSavedSession && onResumeGame && (
+              <button
+                onClick={handleResume}
+                className="btn-material-bronze group inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl text-base md:text-lg tracking-wider uppercase cursor-pointer shadow-xl ring-2 ring-amber-400/80 animate-pulse"
+                title={`Tiếp tục ván chơi dở dang: ${savedSessionLevelTitle || ''}`}
+              >
+                <FastForward className="w-5 h-5 fill-current text-amber-200" />
+                <span>Tiếp Tục Chơi</span>
+              </button>
+            )}
+
             <button
               onClick={handleStart}
-              className="btn-material-bronze group inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl text-base md:text-lg tracking-wider uppercase cursor-pointer shadow-lg"
+              className={`${
+                hasSavedSession
+                  ? 'btn-material-wood px-6 py-3.5 text-sm md:text-base border border-[#5c4028]'
+                  : 'btn-material-bronze px-8 py-3.5 text-base md:text-lg'
+              } group inline-flex items-center justify-center gap-2.5 rounded-xl tracking-wider uppercase cursor-pointer shadow-lg`}
             >
-              <Play className="w-5 h-5 fill-current text-[#faebd7]" />
-              <span>Bước Vào Lịch Sử</span>
+              <Play className="w-4 h-4 fill-current text-[#faebd7]" />
+              <span>{hasSavedSession ? 'Chơi Ván Mới' : 'Bước Vào Lịch Sử'}</span>
             </button>
 
             <button
@@ -156,7 +186,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
                 soundEngine.playSFX('horn');
                 onOpenLevelSelect();
               }}
-              className="btn-material-wood inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-sm md:text-base tracking-wider uppercase cursor-pointer border border-[#5c4028] text-amber-200 hover:text-amber-100 shadow-md"
+              className="btn-material-iron inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-sm md:text-base tracking-wider uppercase cursor-pointer text-stone-200 hover:text-white shadow-md"
             >
               <ListOrdered className="w-4 h-4 text-amber-400" />
               <span>Chọn Chiến Dịch</span>
@@ -198,45 +228,45 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
                   <span className="text-xs font-black text-[#faebd7] text-center leading-tight truncate w-full">
                     {char.name}
                   </span>
-                  <span className="text-[10px] text-[#b89f88] font-bold text-center truncate w-full mt-0.5">
-                    {char.faction === 'viet' ? 'Đại Việt' : 'Nam Hán'}
-                  </span>
                 </button>
               );
             })}
           </div>
 
-          {/* Hero Bio Display */}
+          {/* Hero Bio Details Card */}
           {CHARACTERS[previewChar] && (
-            <div className="bg-[#120d09] rounded-xl p-3.5 border-2 border-[#3b2718]">
-              <div className="flex items-center gap-2 mb-1">
-                <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: CHARACTERS[previewChar].themeColor }}
-                />
-                <span className="text-xs font-black text-[#faebd7]">
+            <div className="bg-[#120b07] p-3.5 rounded-xl border-2 border-[#3d2717] text-left">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-black text-[#faebd7] block">
                   {CHARACTERS[previewChar].name}
                 </span>
-                <span className="text-[10px] text-[#b89f88] font-bold">
-                  ({CHARACTERS[previewChar].title})
+                <span
+                  className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider"
+                  style={{
+                    backgroundColor: CHARACTERS[previewChar].themeColor + '33',
+                    color: '#faebd7',
+                    border: `1px solid ${CHARACTERS[previewChar].themeColor}`,
+                  }}
+                >
+                  {CHARACTERS[previewChar].title}
                 </span>
               </div>
-              <p className="text-[11px] text-[#b89f88] leading-relaxed italic">
-                {previewChar === 'ngo_quyen' &&
-                  'Người anh hùng dân tộc với mưu lược phi thường, định đoạt số phận quân Nam Hán bằng trận địa cọc ngầm.'}
-                {previewChar === 'nguyen_tat_to' &&
-                  'Tướng quân quả cảm am tường con nước, thống lĩnh đội thuyền nhẹ nhử giặc vào tử địa.'}
-                {previewChar === 'hoang_thao' &&
-                  'Hoàng tử Nam Hán kiêu ngạo đem vạn chiến thuyền to lớn vượt biển hòng thôn tính bờ cõi.'}
+              <p className="text-xs text-[#b89f88] leading-relaxed font-semibold">
+                {previewChar === 'ngo_quyen'
+                  ? 'Bậc anh hùng dũng lược, trí mưu tột bực. Thống lĩnh toàn quân Đại Việt, thiết lập thế trận cọc ngầm định mệnh.'
+                  : previewChar === 'nguyen_tat_to'
+                  ? 'Tướng tiên phong mưu trí, thông thạo luồng lạch sông Bạch Đằng, trực tiếp chỉ huy đội thuyền nhẹ nhử địch vào bẫy cọc.'
+                  : 'Hoàng tử Nam Hán, chỉ huy vạn chiến hạm kiêu ngạo tràn sang xâm lược, cuối cùng chịu diệt vong nơi cửa sông.'}
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Footer Bar */}
-      <footer className="relative z-10 w-full py-2.5 text-center text-[11px] font-bold text-[#8c7460] bg-[#0c0805] border-t border-[#261910] uppercase tracking-wider">
-        Sử Ký Trực Quan • Đại Trận Bạch Đằng Giang 938 • Giữ Vẹn Non Sông
+      {/* Footer Status Bar */}
+      <footer className="relative z-10 w-full px-6 py-2.5 text-center text-xs text-[#8c735d] border-t-2 border-[#382414] bg-[#0c0704] flex items-center justify-between">
+        <span>© 2026 Sử Ký Đại Việt • Kỷ Nguyên Độc Lập</span>
+        <span className="text-[#d4af37] font-bold">Phiên bản Tương Tác Sử Học 2.0</span>
       </footer>
     </div>
   );

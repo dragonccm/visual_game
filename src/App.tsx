@@ -4,6 +4,7 @@ import { DEFAULT_BACH_DANG_CAMPAIGN } from './data/defaultCampaigns';
 import { levelStorage } from './utils/levelStorage';
 import { soundEngine } from './utils/soundEngine';
 import { authService } from './utils/auth';
+import { gameStateStorage } from './utils/gameStateStorage';
 import { LandingScreen } from './components/LandingScreen';
 import { LevelSelectScreen } from './components/LevelSelectScreen';
 import { AdminStudio } from './components/admin/AdminStudio';
@@ -17,20 +18,33 @@ import { DialogueHistoryModal } from './components/DialogueHistoryModal';
 import { StoryFlowchartModal } from './components/StoryFlowchartModal';
 import { EndingScreen } from './components/EndingScreen';
 
-const STORAGE_KEY_ENDINGS = 'history_game_unlocked_endings';
-
 export function App() {
-  const [currentCampaign, setCurrentCampaign] = useState<CampaignLevel>(DEFAULT_BACH_DANG_CAMPAIGN);
   const [isAdmin, setIsAdmin] = useState<boolean>(() => authService.isAdminLoggedIn());
   const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
 
+  // 1. Phục hồi toàn bộ trạng thái tiến trình và cài đặt khi reload trang
   const [gameState, setGameState] = useState<GameState>(() => {
-    let savedEndings: string[] = [];
-    try {
-      const data = localStorage.getItem(STORAGE_KEY_ENDINGS);
-      if (data) savedEndings = JSON.parse(data);
-    } catch {
-      // Storage error
+    const savedSession = gameStateStorage.loadSession();
+    const settings = gameStateStorage.loadSettings();
+    const unlockedEndings = gameStateStorage.loadUnlockedEndings();
+    const adminLoggedIn = authService.isAdminLoggedIn();
+
+    if (savedSession && savedSession.gameState) {
+      const restored = savedSession.gameState;
+      const phase =
+        restored.gamePhase === 'admin' && !adminLoggedIn
+          ? 'level_select'
+          : restored.gamePhase;
+
+      return {
+        ...restored,
+        gamePhase: phase || 'landing',
+        isMuted: settings.isMuted,
+        isVoiceEnabled: settings.isVoiceEnabled,
+        studyMode: settings.studyMode,
+        unlockedEndings:
+          unlockedEndings.length > 0 ? unlockedEndings : restored.unlockedEndings || [],
+      };
     }
 
     return {
@@ -42,23 +56,49 @@ export function App() {
       morale: DEFAULT_BACH_DANG_CAMPAIGN.initialMorale || 80,
       visitedScenes: [DEFAULT_BACH_DANG_CAMPAIGN.initialSceneId],
       selectedChoices: {},
-      isMuted: false,
-      isVoiceEnabled: true,
-      studyMode: true,
+      isMuted: settings.isMuted,
+      isVoiceEnabled: settings.isVoiceEnabled,
+      studyMode: settings.studyMode,
       gamePhase: 'landing',
-      unlockedEndings: savedEndings,
+      unlockedEndings,
     };
   });
+
+  const [currentCampaign, setCurrentCampaign] = useState<CampaignLevel>(DEFAULT_BACH_DANG_CAMPAIGN);
 
   const [isCodexOpen, setIsCodexOpen] = useState<boolean>(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
   const [isFlowchartOpen, setIsFlowchartOpen] = useState<boolean>(false);
   const [showChoices, setShowChoices] = useState<boolean>(false);
 
-  // Initialize level storage on launch
+  // 2. Khởi tạo storage và nạp đúng Campaign Level đang chơi dở
   useEffect(() => {
-    levelStorage.initialize().catch(console.error);
+    const initializeAppStorage = async () => {
+      await levelStorage.initialize();
+      const targetLevelId = gameState.currentLevelId || gameStateStorage.getActiveCampaignId();
+      if (targetLevelId) {
+        const found = await levelStorage.getLevel(targetLevelId);
+        if (found) {
+          setCurrentCampaign(found);
+        }
+      }
+    };
+
+    initializeAppStorage().catch(console.error);
   }, []);
+
+  // 3. Cơ chế Auto-Save: Tự động lưu toàn bộ State Data vào localStorage mỗi khi có thay đổi
+  useEffect(() => {
+    if (currentCampaign && currentCampaign.id) {
+      gameStateStorage.saveSession(gameState, currentCampaign.id);
+    }
+  }, [gameState, currentCampaign]);
+
+  // 4. Đồng bộ âm thanh với SoundEngine
+  useEffect(() => {
+    soundEngine.setMuted(gameState.isMuted);
+    soundEngine.setVoiceEnabled(gameState.isVoiceEnabled);
+  }, [gameState.isMuted, gameState.isVoiceEnabled]);
 
   const currentScene =
     currentCampaign.scenes[gameState.currentSceneId] ||
@@ -128,7 +168,7 @@ export function App() {
     }
   };
 
-  // Start game from landing screen (plays default campaign or currently set campaign)
+  // Start a new game from landing screen
   const handleStartGame = (playerName: string, _hero: CharacterId) => {
     setGameState((prev) => ({
       ...prev,
@@ -139,6 +179,16 @@ export function App() {
       dialogueHistory: [],
       visitedScenes: [currentCampaign.initialSceneId],
       morale: currentCampaign.initialMorale || 80,
+      selectedChoices: {},
+    }));
+    setShowChoices(false);
+  };
+
+  // Resume game from where player left off
+  const handleResumeGame = () => {
+    setGameState((prev) => ({
+      ...prev,
+      gamePhase: 'playing',
     }));
   };
 
@@ -216,12 +266,6 @@ export function App() {
             ? prev.unlockedEndings
             : [...prev.unlockedEndings, currentScene.id];
 
-          try {
-            localStorage.setItem(STORAGE_KEY_ENDINGS, JSON.stringify(newUnlocked));
-          } catch {
-            // Ignore
-          }
-
           return {
             ...prev,
             gamePhase: 'ending',
@@ -290,10 +334,15 @@ export function App() {
 
   // 1. Landing Screen
   if (gameState.gamePhase === 'landing') {
+    const hasSavedPlayable = gameStateStorage.hasPlayableSession();
+
     return (
       <>
         <LandingScreen
           onStartGame={handleStartGame}
+          onResumeGame={handleResumeGame}
+          hasSavedSession={hasSavedPlayable}
+          savedSessionLevelTitle={currentCampaign.title}
           onOpenLevelSelect={() => setGameState((prev) => ({ ...prev, gamePhase: 'level_select' }))}
           onOpenAdmin={() => setGameState((prev) => ({ ...prev, gamePhase: 'admin' }))}
           onOpenLogin={() => setIsLoginOpen(true)}
